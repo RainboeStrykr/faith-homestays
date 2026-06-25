@@ -299,7 +299,6 @@ export default function RoomDetail({ roomId, onBack }: RoomDetailProps) {
               gap: '10px',
             }}
           >
-            <Row k="Size" v={room.sqm} />
             <Row k="Occupancy" v={room.occupancy} />
             <Row k="Bed" v={room.bed} />
           </dl>

@@ -269,10 +269,6 @@ export default function BookingConfirm() {
 
             <div className="border-t border-b border-neutral-200 py-4 space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-neutral-500">Room size:</span>
-                <span>{room.sqm}</span>
-              </div>
-              <div className="flex justify-between text-sm">
                 <span className="text-neutral-500">Occupancy:</span>
                 <span>{room.occupancy}</span>
               </div>
