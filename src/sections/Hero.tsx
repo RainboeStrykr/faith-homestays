@@ -153,12 +153,15 @@ export default function Hero() {
 
     // Map roomType string to roomId
     const roomMap: Record<string, string> = {
-      'Deluxe Cosy Room': '01',
-      'Standard Room (AC)': '02',
-      'Backpacker Beds': '03',
-      'Superior Cosy Room': '04',
-      'AC Room for 3 Pax': '05',
-      'Family Suite': '06',
+      'Standard Deluxe Cosy Room': '01',
+      'Superior Deluxe AC Room': '02',
+      'Premium Family Suite': '03',
+      'Standard Deluxe AC Room': '04',
+      'Standard Backpacker\'s Twin Room': '05',
+      'Standard Cosy Room': '06',
+      'Standard Single Room': '07',
+      'Premium AC Dormitory - Public Bunk': '08',
+      'Premium AC Dormitory - Private Bunk': '09',
     }
     const roomId = roomMap[formData.roomType] || '01'
 
@@ -316,12 +319,15 @@ export default function Hero() {
                 onChange={handleChange}
                 options={[
                   'Any room',
-                  'Deluxe Cosy Room',
-                  'Standard Room (AC)',
-                  'Backpacker Beds',
-                  'Superior Cosy Room',
-                  'AC Room for 3 Pax',
-                  'Family Suite',
+                  'Standard Deluxe Cosy Room',
+                  'Superior Deluxe AC Room',
+                  'Premium Family Suite',
+                  'Standard Deluxe AC Room',
+                  'Standard Backpacker\'s Twin Room',
+                  'Standard Cosy Room',
+                  'Standard Single Room',
+                  'Premium AC Dormitory - Public Bunk',
+                  'Premium AC Dormitory - Private Bunk',
                 ]}
               />
             </Row>
