@@ -3,13 +3,13 @@ import gsap from 'gsap'
 
 const services: { label: string; detail: string }[] = [
   { label: 'Free Wi-Fi', detail: 'High-speed internet access throughout the property' },
-  { label: 'Buffet Breakfast', detail: 'Freshly prepared complimentary breakfast every morning' },
-  { label: 'Rooftop Restaurant', detail: 'Multi-cuisine dining at The Terrace Garden with panoramic views' },
+  { label: 'Complimentary Breakfast', detail: 'Freshly prepared complimentary breakfast' },
+  { label: 'Rooftop Lounge', detail: 'Relax and rejuvenate at The Terrace Garden with panoramic views' },
   { label: '24x7 Support', detail: 'Round-the-clock staff assistance for all guest needs' },
-  { label: 'Room Service', detail: 'In-room dining and housekeeping at your convenience' },
+  { label: 'Premium Connectivity', detail: 'Close distance to the nearest airport, train station and bus junction.' },
   { label: 'Hot / Cold Water', detail: 'Running hot and cold water in all bathrooms' },
   { label: 'Tea / Coffee Maker', detail: 'In-room facility to brew your favourite beverages' },
-  { label: 'Parking', detail: 'Secure on-site parking available for all guests' },
+  { label: 'Parking', detail: 'Secure on-site parking available' },
 ]
 
 export default function Capabilities() {
