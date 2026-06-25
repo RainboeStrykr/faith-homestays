@@ -6,12 +6,13 @@ import Philosophy from './sections/Philosophy'
 import Works from './sections/Works'
 import Capabilities from './sections/Capabilities'
 import Spatial from './sections/Spatial'
+import Gallery from './sections/Gallery'
 import Footer from './sections/Footer'
 import Preloader from './sections/Preloader'
-import RoomDetail from './pages/RoomDetail'
 import Login from './pages/Login'
 import BookingConfirm from './pages/BookingConfirm'
 import Dashboard from './pages/Dashboard'
+import RoomDetail from './pages/RoomDetail'
 
 function App() {
   const scrollRef = useRef({ y: 0, speed: 0 })
@@ -73,6 +74,7 @@ function App() {
               <Philosophy />
               <Works scrollRef={scrollRef} onSelectRoom={handleSelectRoom} />
               <Capabilities />
+              <Gallery />
               <Hero />
             </main>
           )}
