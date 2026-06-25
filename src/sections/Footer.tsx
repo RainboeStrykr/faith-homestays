@@ -1,189 +1,266 @@
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Facebook,
+  Instagram,
+  MessageCircle,
+} from "lucide-react";
+import {
+  FooterBackgroundGradient,
+  TextHoverEffect,
+} from "../components/ui/hover-footer";
+
+/* ── Data ────────────────────────────────────────────────────────── */
+
+const footerLinks = [
+  {
+    title: "Explore",
+    links: [
+      { label: "Our Rooms", href: "#works" },
+      { label: "Amenities", href: "#capabilities" },
+      { label: "Gallery", href: "#gallery" },
+      { label: "Book Your Stay", href: "#hero" },
+    ],
+  },
+  {
+    title: "About",
+    links: [
+      { label: "Siliguri Homestay", href: "#" },
+      { label: "Gateway to Himalayas", href: "#" },
+      { label: "Near Bagdogra Airport", href: "#" },
+      { label: "Near NJP Railway Station", href: "#" },
+    ],
+  },
+];
+
+const contactInfo = [
+  {
+    icon: <Mail size={16} className="text-[#3ca2fa]" />,
+    text: "faiththeretreat@gmail.com",
+    href: "mailto:faiththeretreat@gmail.com",
+  },
+  {
+    icon: <Phone size={16} className="text-[#3ca2fa]" />,
+    text: "+91 94340 45060",
+    href: "tel:+919434045060",
+  },
+  {
+    icon: <Phone size={16} className="text-[#3ca2fa]" />,
+    text: "+91 89188 03065",
+    href: "tel:+918918803065",
+  },
+  {
+    icon: <MapPin size={16} className="text-[#3ca2fa]" />,
+    text: "Bimal Sinha Sarani, Siliguri, WB 734001",
+  },
+];
+
+const socialLinks = [
+  {
+    icon: <Instagram size={18} />,
+    label: "Instagram",
+    href: "https://instagram.com/faith.theretreat",
+  },
+  {
+    icon: <Facebook size={18} />,
+    label: "Facebook",
+    href: "https://facebook.com",
+  },
+  {
+    icon: <MessageCircle size={18} />,
+    label: "WhatsApp",
+    href: "https://wa.me/919434045060",
+  },
+  {
+    icon: <Mail size={18} />,
+    label: "Email",
+    href: "mailto:faiththeretreat@gmail.com",
+  },
+];
+
+/* ── Component ───────────────────────────────────────────────────── */
+
 export default function Footer() {
   return (
     <footer
       id="footer"
-      style={{
-        backgroundColor: '#ffffff',
-        borderTop: '1px solid #000000',
-        padding: '80px clamp(20px, 4vw, 60px) 0',
-        minHeight: '600px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        overflow: 'hidden',
-      }}
+      className="relative h-fit overflow-hidden"
+      style={{ backgroundColor: "#0F0F11" }}
     >
-      {/* Top: Office Info */}
       <div
-        style={{
-          maxWidth: '1400px',
-          margin: '0 auto',
-          width: '100%',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '40px',
-          paddingBottom: '80px',
-        }}
+        className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 pt-16"
+        style={{ color: "rgba(255,255,255,0.65)" }}
       >
-        <OfficeColumn
-          city="Siliguri"
-          cityEn="WEST BENGAL"
-          address="Bimal Sinha Sarani, Siliguri, West Bengal 734001, India"
-          coords="26.7271° N, 88.3953° E"
-          timezone="UTC+5:30"
-        />
-        <OfficeColumn
-          city="Location"
-          cityEn="NEARBY"
-          address="Gateway to Sikkim, Bhutan & the Seven Sisters of Eastern India. Close to Bagdogra Airport and NJP Railway Station."
-          coords="Strategic location"
-          timezone="Hill station access"
-        />
-        <OfficeColumn
-          city="Contact"
-          cityEn="REACH US"
-          address="Available 24/7 for bookings and inquiries. Connect via phone, email or WhatsApp."
-          coords="+91 94340 45060"
-          timezone="+91 89188 03065"
-        />
-        <div>
-          <p
-            style={{
-              fontSize: '12px',
-              fontWeight: 500,
-              letterSpacing: '0.18em',
-              color: '#000000',
-              marginBottom: '20px',
-            }}
-          >
-            CONTACT
-          </p>
-          <p style={{ fontSize: '14px', color: '#666666', lineHeight: 2 }}>
-            faiththeretreat@gmail.com
-            <br />
-            +91 94340 45060
-            <br />
-            +91 89188 03065
-            <br />
-            <span style={{ fontSize: '12px', color: '#999', marginTop: '8px', display: 'block' }}>
-              Instagram: @faith.theretreat
-            </span>
+        {/* ── Top grid ───────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 pb-12">
+
+          {/* Brand column */}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <span style={{ color: "#3ca2fa", fontSize: "1.8rem", fontWeight: 800 }}>
+                &#10041;
+              </span>
+              <span
+                style={{
+                  color: "#ffffff",
+                  fontSize: "1.5rem",
+                  fontWeight: 700,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                FAITH
+              </span>
+            </div>
+            <p style={{ fontSize: "13px", lineHeight: 1.7 }}>
+              A warm, cosy and hygienic homestay in Siliguri — the gateway to
+              Sikkim, Bhutan and the Eastern Himalayas. Affordable yet premium,
+              always feeling like home.
+            </p>
+          </div>
+
+          {/* Nav link columns */}
+          {footerLinks.map((section) => (
+            <div key={section.title}>
+              <h4
+                style={{
+                  color: "#ffffff",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  marginBottom: "20px",
+                }}
+              >
+                {section.title}
+              </h4>
+              <ul className="flex flex-col gap-3">
+                {section.links.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      style={{
+                        fontSize: "13px",
+                        color: "rgba(255,255,255,0.55)",
+                        textDecoration: "none",
+                        transition: "color 0.2s ease",
+                      }}
+                      onMouseEnter={(e) =>
+                        ((e.target as HTMLAnchorElement).style.color = "#3ca2fa")
+                      }
+                      onMouseLeave={(e) =>
+                        ((e.target as HTMLAnchorElement).style.color =
+                          "rgba(255,255,255,0.55)")
+                      }
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+
+          {/* Contact column */}
+          <div>
+            <h4
+              style={{
+                color: "#ffffff",
+                fontSize: "14px",
+                fontWeight: 600,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                marginBottom: "20px",
+              }}
+            >
+              Contact Us
+            </h4>
+            <ul className="flex flex-col gap-4">
+              {contactInfo.map((item, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="mt-0.5 shrink-0">{item.icon}</span>
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      style={{
+                        fontSize: "13px",
+                        color: "rgba(255,255,255,0.55)",
+                        textDecoration: "none",
+                        transition: "color 0.2s ease",
+                      }}
+                      onMouseEnter={(e) =>
+                        ((e.target as HTMLAnchorElement).style.color = "#3ca2fa")
+                      }
+                      onMouseLeave={(e) =>
+                        ((e.target as HTMLAnchorElement).style.color =
+                          "rgba(255,255,255,0.55)")
+                      }
+                    >
+                      {item.text}
+                    </a>
+                  ) : (
+                    <span style={{ fontSize: "13px" }}>{item.text}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* ── Divider ────────────────────────────────────────────── */}
+        <hr style={{ borderColor: "rgba(255,255,255,0.1)" }} />
+
+        {/* ── Bottom bar ─────────────────────────────────────────── */}
+        <div
+          className="flex flex-wrap justify-between items-center gap-4 py-6"
+          style={{ fontSize: "12px" }}
+        >
+          <div className="flex gap-5">
+            {socialLinks.map(({ icon, label, href }) => (
+              <a
+                key={label}
+                href={href}
+                aria-label={label}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: "rgba(255,255,255,0.4)",
+                  transition: "color 0.2s ease",
+                }}
+                onMouseEnter={(e) =>
+                  ((e.target as HTMLElement).style.color = "#3ca2fa")
+                }
+                onMouseLeave={(e) =>
+                  ((e.target as HTMLElement).style.color =
+                    "rgba(255,255,255,0.4)")
+                }
+              >
+                {icon}
+              </a>
+            ))}
+          </div>
+          <p style={{ color: "rgba(255,255,255,0.35)" }}>
+            &copy; {new Date().getFullYear()} Faith The Retreat. A Unit of
+            Commercial Data Service.
           </p>
         </div>
       </div>
 
-      {/* Bottom: Giant Wordmark */}
+      {/* ── TextHoverEffect wordmark ────────────────────────────── */}
       <div
+        className="hidden lg:flex"
         style={{
-          width: '100%',
-          overflow: 'hidden',
-          lineHeight: 0.85,
-          paddingBottom: '0',
+          height: "28rem",
+          marginTop: "-9rem",
+          marginBottom: "-6rem",
+          color: "#ffffff",
         }}
       >
-        <span
-          style={{
-            display: 'block',
-            fontSize: 'clamp(80px, 18vw, 320px)',
-            fontWeight: 400,
-            letterSpacing: '-0.04em',
-            color: '#000000',
-            whiteSpace: 'nowrap',
-            transform: 'translateY(15%)',
-            userSelect: 'none',
-          }}
-        >
-          FAITH
-        </span>
+        <TextHoverEffect text="FAITH" className="z-10" />
       </div>
 
-      {/* Copyright bar */}
-      <div
-        style={{
-          borderTop: '1px solid #e5e5e5',
-          padding: '20px clamp(20px, 4vw, 60px)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '12px',
-        }}
-      >
-        <p
-          style={{
-            fontSize: '12px',
-            color: '#999999',
-            letterSpacing: '0.05em',
-          }}
-        >
-          &copy; {new Date().getFullYear()} Faith The Retreat. A Unit of Commercial Data Service.
-        </p>
-        <p
-          style={{
-            fontSize: '12px',
-            color: '#999999',
-            letterSpacing: '0.05em',
-          }}
-        >
-          Designed with care for every traveller.
-        </p>
-      </div>
+      {/* ── Animated background glow ───────────────────────────── */}
+      <FooterBackgroundGradient />
     </footer>
-  )
-}
-
-function OfficeColumn({
-  city,
-  cityEn,
-  address,
-  coords,
-  timezone,
-}: {
-  city: string
-  cityEn: string
-  address: string
-  coords: string
-  timezone: string
-}) {
-  return (
-    <div>
-      <p
-        style={{
-          fontSize: '12px',
-          fontWeight: 500,
-          letterSpacing: '0.18em',
-          color: '#000000',
-          marginBottom: '20px',
-        }}
-      >
-        {cityEn}
-      </p>
-      <p style={{ fontSize: '16px', fontWeight: 500, color: '#000000', marginBottom: '8px' }}>
-        {city}
-      </p>
-      <p
-        style={{
-          fontSize: '14px',
-          color: '#666666',
-          lineHeight: 1.6,
-          marginBottom: '12px',
-          maxWidth: '260px',
-        }}
-      >
-        {address}
-      </p>
-      <p
-        style={{
-          fontSize: '11px',
-          letterSpacing: '0.05em',
-          color: '#666666',
-          fontVariantNumeric: 'tabular-nums',
-        }}
-      >
-        {coords}
-        <br />
-        {timezone}
-      </p>
-    </div>
-  )
+  );
 }

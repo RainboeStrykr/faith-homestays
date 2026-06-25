@@ -107,7 +107,7 @@ export default function Gallery() {
             textAlign: 'right',
           }}
         >
-          Step inside Faith Homestays and see what makes every corner feel
+          Step inside Faith and see what makes every corner feel
           like home — from sunlit corridors to terrace lounges.
         </p>
       </div>
