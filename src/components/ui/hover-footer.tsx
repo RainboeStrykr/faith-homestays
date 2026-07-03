@@ -156,7 +156,7 @@ export function FooterBackgroundGradient({
           bottom: "-20%",
           left: "20%",
           background:
-            "radial-gradient(ellipse at center, rgba(60,162,250,0.12) 0%, transparent 70%)",
+            "radial-gradient(ellipse at center, rgba(254,230,0,0.12) 0%, transparent 70%)",
           filter: "blur(40px)",
         }}
         animate={{
@@ -179,7 +179,7 @@ export function FooterBackgroundGradient({
           bottom: "-10%",
           right: "10%",
           background:
-            "radial-gradient(ellipse at center, rgba(120,80,255,0.08) 0%, transparent 70%)",
+            "radial-gradient(ellipse at center, rgba(254,230,0,0.08) 0%, transparent 70%)",
           filter: "blur(60px)",
         }}
         animate={{

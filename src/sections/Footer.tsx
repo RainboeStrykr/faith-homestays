@@ -2,9 +2,7 @@ import {
   Mail,
   Phone,
   MapPin,
-  Facebook,
   Instagram,
-  MessageCircle,
 } from "lucide-react";
 import {
   FooterBackgroundGradient,
@@ -36,48 +34,37 @@ const footerLinks = [
 
 const contactInfo = [
   {
-    icon: <Mail size={16} className="text-[#3ca2fa]" />,
+    icon: <Mail size={16} className="text-[#fee600]" />,
     text: "faiththeretreat@gmail.com",
     href: "mailto:faiththeretreat@gmail.com",
   },
   {
-    icon: <Phone size={16} className="text-[#3ca2fa]" />,
+    icon: <Phone size={16} className="text-[#fee600]" />,
     text: "+91 94340 45060",
     href: "tel:+919434045060",
   },
   {
-    icon: <Phone size={16} className="text-[#3ca2fa]" />,
+    icon: <Phone size={16} className="text-[#fee600]" />,
     text: "+91 89188 03065",
     href: "tel:+918918803065",
   },
   {
-    icon: <MapPin size={16} className="text-[#3ca2fa]" />,
+    icon: <Instagram size={16} className="text-[#fee600]" />,
+    text: "@faith.theretreat",
+    href: "https://instagram.com/faith.theretreat",
+  },
+  {
+    icon: <MapPin size={16} className="text-[#fee600]" />,
     text: "Bimal Sinha Sarani, Siliguri, WB 734001",
   },
 ];
 
-const socialLinks = [
-  {
-    icon: <Instagram size={18} />,
-    label: "Instagram",
-    href: "https://instagram.com/faith.theretreat",
-  },
-  {
-    icon: <Facebook size={18} />,
-    label: "Facebook",
-    href: "https://facebook.com",
-  },
-  {
-    icon: <MessageCircle size={18} />,
-    label: "WhatsApp",
-    href: "https://wa.me/919434045060",
-  },
-  {
-    icon: <Mail size={18} />,
-    label: "Email",
-    href: "mailto:faiththeretreat@gmail.com",
-  },
-];
+const linkStyle = {
+  fontSize: "13px",
+  color: "rgba(255,255,255,0.55)",
+  textDecoration: "none",
+  transition: "color 0.2s ease",
+} as const;
 
 /* ── Component ───────────────────────────────────────────────────── */
 
@@ -97,21 +84,11 @@ export default function Footer() {
 
           {/* Brand column */}
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-              <span style={{ color: "#3ca2fa", fontSize: "1.8rem", fontWeight: 800 }}>
-                &#10041;
-              </span>
-              <span
-                style={{
-                  color: "#ffffff",
-                  fontSize: "1.5rem",
-                  fontWeight: 700,
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                FAITH
-              </span>
-            </div>
+            <img
+              src="/full-size-logo.jpg"
+              alt="Faith The Retreat"
+              style={{ width: "160px", height: "auto", display: "block", objectFit: "contain" }}
+            />
             <p style={{ fontSize: "13px", lineHeight: 1.7 }}>
               A warm, cosy and hygienic homestay in Siliguri — the gateway to
               Sikkim, Bhutan and the Eastern Himalayas. Affordable yet premium,
@@ -139,19 +116,9 @@ export default function Footer() {
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      style={{
-                        fontSize: "13px",
-                        color: "rgba(255,255,255,0.55)",
-                        textDecoration: "none",
-                        transition: "color 0.2s ease",
-                      }}
-                      onMouseEnter={(e) =>
-                        ((e.target as HTMLAnchorElement).style.color = "#3ca2fa")
-                      }
-                      onMouseLeave={(e) =>
-                        ((e.target as HTMLAnchorElement).style.color =
-                          "rgba(255,255,255,0.55)")
-                      }
+                      style={linkStyle}
+                      onMouseEnter={(e) => ((e.target as HTMLAnchorElement).style.color = "#fee600")}
+                      onMouseLeave={(e) => ((e.target as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)")}
                     >
                       {link.label}
                     </a>
@@ -182,19 +149,9 @@ export default function Footer() {
                   {item.href ? (
                     <a
                       href={item.href}
-                      style={{
-                        fontSize: "13px",
-                        color: "rgba(255,255,255,0.55)",
-                        textDecoration: "none",
-                        transition: "color 0.2s ease",
-                      }}
-                      onMouseEnter={(e) =>
-                        ((e.target as HTMLAnchorElement).style.color = "#3ca2fa")
-                      }
-                      onMouseLeave={(e) =>
-                        ((e.target as HTMLAnchorElement).style.color =
-                          "rgba(255,255,255,0.55)")
-                      }
+                      style={linkStyle}
+                      onMouseEnter={(e) => ((e.target as HTMLAnchorElement).style.color = "#fee600")}
+                      onMouseLeave={(e) => ((e.target as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)")}
                     >
                       {item.text}
                     </a>
@@ -210,35 +167,11 @@ export default function Footer() {
         {/* ── Divider ────────────────────────────────────────────── */}
         <hr style={{ borderColor: "rgba(255,255,255,0.1)" }} />
 
-        {/* ── Bottom bar ─────────────────────────────────────────── */}
+        {/* ── Copyright bar — above the FAITH wordmark ───────────── */}
         <div
-          className="flex flex-wrap justify-between items-center gap-4 py-6"
+          className="flex justify-center items-center py-6"
           style={{ fontSize: "12px" }}
         >
-          <div className="flex gap-5">
-            {socialLinks.map(({ icon, label, href }) => (
-              <a
-                key={label}
-                href={href}
-                aria-label={label}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  color: "rgba(255,255,255,0.4)",
-                  transition: "color 0.2s ease",
-                }}
-                onMouseEnter={(e) =>
-                  ((e.target as HTMLElement).style.color = "#3ca2fa")
-                }
-                onMouseLeave={(e) =>
-                  ((e.target as HTMLElement).style.color =
-                    "rgba(255,255,255,0.4)")
-                }
-              >
-                {icon}
-              </a>
-            ))}
-          </div>
           <p style={{ color: "rgba(255,255,255,0.35)" }}>
             &copy; {new Date().getFullYear()} Faith The Retreat. A Unit of
             Commercial Data Service.
