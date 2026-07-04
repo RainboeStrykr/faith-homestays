@@ -15,10 +15,10 @@ const footerLinks = [
   {
     title: "Explore",
     links: [
-      { label: "Our Rooms", href: "#works" },
-      { label: "Amenities", href: "#capabilities" },
+      { label: "Our Rooms", href: "#rooms" },
+      { label: "Amenities", href: "#amenities" },
       { label: "Gallery", href: "#gallery" },
-      { label: "Book Your Stay", href: "#hero" },
+      { label: "Book Your Stay", href: "#contact" },
     ],
   },
   {
@@ -71,7 +71,7 @@ const linkStyle = {
 export default function Footer() {
   return (
     <footer
-      id="footer"
+      id="contact"
       aria-label="Site footer"
       className="relative h-fit overflow-hidden"
       style={{ backgroundColor: "#0F0F11" }}

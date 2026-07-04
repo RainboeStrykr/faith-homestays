@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Routes, Route } from 'react-router'
 import Header from './sections/Header'
-import Hero from './sections/Hero'
 import Philosophy from './sections/Philosophy'
 import Works from './sections/Works'
 import Capabilities from './sections/Capabilities'
 import Spatial from './sections/Spatial'
 import Gallery from './sections/Gallery'
 import Testimonials from './sections/Testimonials'
+import CTA from './sections/CTA'
 import Footer from './sections/Footer'
 import Preloader from './sections/Preloader'
 import Login from './pages/Login'
@@ -40,7 +40,7 @@ function App() {
   const handleBack = () => {
     setCurrentRoomId(null)
     setTimeout(() => {
-      document.querySelector('#works')?.scrollIntoView({ behavior: 'auto' })
+      document.querySelector('#rooms')?.scrollIntoView({ behavior: 'auto' })
     }, 0)
   }
 
@@ -77,9 +77,9 @@ function App() {
               <Capabilities />
               <Gallery />
               <Testimonials />
-              <Hero />
             </main>
           )}
+          <CTA />
           <Footer />
         </>
       } />

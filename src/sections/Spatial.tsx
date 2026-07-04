@@ -37,7 +37,7 @@ export default function Spatial() {
 
   return (
     <section
-      id="spatial"
+      id="home"
       ref={sectionRef}
       style={{
         position: 'relative',
@@ -97,7 +97,7 @@ export default function Spatial() {
             textTransform: 'uppercase',
           }}
         >
-          Homestay &middot; Siliguri &middot; West Bengal
+          Homestay &middot; Studio Rooms &middot; Dormitories
         </span>
 
         <h1
@@ -132,43 +132,55 @@ export default function Spatial() {
 
         <div style={{ display: 'flex', gap: '16px', marginTop: '12px', flexWrap: 'wrap' }}>
           <button
-            onClick={() => document.querySelector('#hero')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => document.querySelector('#rooms')?.scrollIntoView({ behavior: 'smooth' })}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
               fontSize: '13px',
               fontWeight: 500,
-              letterSpacing: '0.14em',
-              color: hovered ? '#0b0b0b' : '#ffffff',
-              backgroundColor: hovered ? '#ffffff' : 'transparent',
-              border: '1px solid #ffffff',
+              letterSpacing: '0.12em',
+              color: '#0a0a0a',
+              backgroundColor: hovered ? '#ffffff' : '#fee600',
+              border: '1px solid transparent',
               padding: '16px 36px',
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
+              transition: 'all 0.25s ease',
               textTransform: 'uppercase',
               fontFamily: '"Helvetica Neue", sans-serif',
             }}
           >
-            Book Your Stay
+            Explore Rooms <span style={{ fontSize: '15px' }}>→</span>
           </button>
           <button
-            onClick={() => document.querySelector('#works')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(255,255,255,0.08)'
+              ;(e.currentTarget as HTMLButtonElement).style.color = '#ffffff'
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent'
+              ;(e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.7)'
+            }}
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
               fontSize: '13px',
               fontWeight: 500,
-              letterSpacing: '0.14em',
-              color: '#ffffff',
+              letterSpacing: '0.12em',
+              color: 'rgba(255,255,255,0.7)',
               backgroundColor: 'transparent',
-              border: 'none',
-              padding: '16px 8px',
+              border: '1px solid rgba(255,255,255,0.2)',
+              padding: '16px 36px',
               cursor: 'pointer',
+              transition: 'all 0.25s ease',
               textTransform: 'uppercase',
               fontFamily: '"Helvetica Neue", sans-serif',
-              textDecoration: 'underline',
-              textUnderlineOffset: '6px',
             }}
           >
-            Explore Rooms &rarr;
+            Contact Us
           </button>
         </div>
       </div>

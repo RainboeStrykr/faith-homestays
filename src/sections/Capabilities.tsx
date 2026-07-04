@@ -24,7 +24,7 @@ export default function Capabilities() {
 
   return (
     <section
-      id="capabilities"
+      id="amenities"
       ref={sectionRef}
       style={{
         position: 'relative',

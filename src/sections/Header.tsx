@@ -7,8 +7,8 @@ interface HeaderProps {
   forceLight?: boolean
 }
 
-const navItems = ['Rooms', 'Services', 'Contact']
-const sectionIds = ['#works', '#capabilities', '#footer']
+const navItems = ['Rooms', 'Amenities', 'Gallery', 'Contact']
+const sectionIds = ['#rooms', '#amenities', '#gallery', '#contact']
 
 function getOAuthUrl() {
   const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN

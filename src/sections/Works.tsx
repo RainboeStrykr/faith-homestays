@@ -38,7 +38,7 @@ export default function Works({ scrollRef: _scrollRef, onSelectRoom }: WorksProp
 
   return (
     <section
-      id="works"
+      id="rooms"
       ref={sectionRef}
       style={{
         backgroundColor: '#f4f4f5',
