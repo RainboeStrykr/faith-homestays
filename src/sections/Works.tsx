@@ -144,6 +144,7 @@ function RoomCard({
           ref={imgRef}
           src={room.img}
           alt={room.title}
+          loading="lazy"
           style={{
             position: 'absolute',
             top: 0,

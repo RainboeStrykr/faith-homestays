@@ -114,7 +114,7 @@ export default function Header({ scrollRef, forceLight = false }: HeaderProps) {
         FAITH
       </div>
 
-      <nav style={{ display: 'flex', alignItems: 'stretch', height: '100%' }}>
+      <nav aria-label="Main navigation" style={{ display: 'flex', alignItems: 'stretch', height: '100%' }}>
         {navItems.map((item, i) => (
           <NavItem
             key={item}

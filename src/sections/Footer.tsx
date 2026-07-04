@@ -72,6 +72,7 @@ export default function Footer() {
   return (
     <footer
       id="footer"
+      aria-label="Site footer"
       className="relative h-fit overflow-hidden"
       style={{ backgroundColor: "#0F0F11" }}
     >
