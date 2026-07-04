@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Testimonial x-slider keyframe ────────────────────────── */
+@keyframes x-slider {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(calc(-50% - 1.25rem)); }
+}
+
 /* ── Gallery caption hover ─────────────────────────────────── */
 figure:hover .gallery-caption {
   opacity: 1 !important;

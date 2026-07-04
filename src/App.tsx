@@ -7,6 +7,7 @@ import Works from './sections/Works'
 import Capabilities from './sections/Capabilities'
 import Spatial from './sections/Spatial'
 import Gallery from './sections/Gallery'
+import Testimonials from './sections/Testimonials'
 import Footer from './sections/Footer'
 import Preloader from './sections/Preloader'
 import Login from './pages/Login'
@@ -75,6 +76,7 @@ function App() {
               <Works scrollRef={scrollRef} onSelectRoom={handleSelectRoom} />
               <Capabilities />
               <Gallery />
+              <Testimonials />
               <Hero />
             </main>
           )}
