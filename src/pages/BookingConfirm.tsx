@@ -45,6 +45,14 @@ export default function BookingConfirm() {
       : basePriceNote
     : basePriceNote
 
+  // Availability check — re-runs whenever the selected dates change
+  const { data: availData } = trpc.reservation.checkAvailability.useQuery(
+    { roomId: roomId ?? '', checkIn: checkInDate, checkOut: checkOutDate },
+    { enabled: !!roomId && !!checkInDate && !!checkOutDate }
+  )
+  const capacity = room?.capacity ?? 1
+  const isSoldOut = availData !== undefined && availData.bookedBeds >= capacity
+
   // Pre-populate user info when user loads
   useEffect(() => {
     if (user) {
@@ -68,6 +76,11 @@ export default function BookingConfirm() {
 
     if (!checkInDate || !checkOutDate) {
       setErrorMsg('Please specify check-in and check-out dates.')
+      return
+    }
+
+    if (isSoldOut) {
+      setErrorMsg('Sorry, this room is fully booked for the selected dates. Please choose different dates.')
       return
     }
 
@@ -337,6 +350,12 @@ export default function BookingConfirm() {
             {isPerBed && guestCount > 1 && (
               <div className="bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-800 leading-relaxed">
                 <span className="font-semibold">Per-bed pricing:</span> {guestCount} beds × {basePrice} = {displayPrice}
+              </div>
+            )}
+
+            {isSoldOut && checkInDate && checkOutDate && (
+              <div className="bg-rose-50 border border-rose-200 px-4 py-3 text-xs text-rose-800 leading-relaxed font-medium">
+                Fully booked for selected dates.
               </div>
             )}
           </div>

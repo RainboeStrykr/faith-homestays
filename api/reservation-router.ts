@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { createRouter, authedQuery, adminQuery } from "./middleware";
+import { createRouter, authedQuery, adminQuery, publicQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { reservationRequests } from "@db/schema";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 
 export const reservationRouter = createRouter({
   create: authedQuery
@@ -88,6 +88,92 @@ export const reservationRouter = createRouter({
         .set({ status: input.status })
         .where(eq(reservationRequests.id, input.id));
       return { success: true };
+    }),
+
+  /**
+   * Public — checks whether a room has remaining capacity for the given dates.
+   * Returns the total confirmed beds booked for overlapping reservations so the
+   * caller can compare against the room's capacity.
+   *
+   * Two date ranges overlap when: checkIn_A < checkOut_B AND checkOut_A > checkIn_B
+   */
+  checkAvailability: publicQuery
+    .input(
+      z.object({
+        roomId: z.string(),
+        checkIn: z.string(),  // YYYY-MM-DD
+        checkOut: z.string(), // YYYY-MM-DD
+      })
+    )
+    .query(async ({ input }) => {
+      const db = getDb();
+      const rows = await db
+        .select({ guests: reservationRequests.guests })
+        .from(reservationRequests)
+        .where(
+          and(
+            eq(reservationRequests.roomId, input.roomId),
+            eq(reservationRequests.status, "confirmed"),
+            // overlapping: existing.checkIn < requested.checkOut AND existing.checkOut > requested.checkIn
+            sql`${reservationRequests.checkInDate} < ${input.checkOut}`,
+            sql`${reservationRequests.checkOutDate} > ${input.checkIn}`
+          )
+        );
+
+      const bookedBeds = rows.reduce(
+        (sum, r) => sum + (parseInt(r.guests, 10) || 1),
+        0
+      );
+
+      return { bookedBeds };
+    }),
+
+  /**
+   * Public — returns a list of roomIds that are fully sold out today.
+   * Used by the homepage grid to badge sold-out rooms without needing
+   * per-room queries.
+   */
+  getSoldOutRooms: publicQuery
+    .input(
+      z.object({
+        /** ISO date string YYYY-MM-DD representing "today" */
+        date: z.string(),
+        /** Map of roomId -> capacity so the server can evaluate sold-out status */
+        capacities: z.record(z.string(), z.number()),
+      })
+    )
+    .query(async ({ input }) => {
+      const db = getDb();
+
+      // All confirmed reservations that cover `date` (checkIn <= date < checkOut)
+      const rows = await db
+        .select({
+          roomId: reservationRequests.roomId,
+          guests: reservationRequests.guests,
+        })
+        .from(reservationRequests)
+        .where(
+          and(
+            eq(reservationRequests.status, "confirmed"),
+            sql`${reservationRequests.checkInDate} <= ${input.date}`,
+            sql`${reservationRequests.checkOutDate} > ${input.date}`
+          )
+        );
+
+      // Sum guests per roomId
+      const bookedMap: Record<string, number> = {};
+      for (const row of rows) {
+        if (!row.roomId) continue;
+        bookedMap[row.roomId] =
+          (bookedMap[row.roomId] ?? 0) + (parseInt(row.guests, 10) || 1);
+      }
+
+      // A room is sold out when booked >= capacity
+      const soldOut = Object.entries(input.capacities)
+        .filter(([roomId, cap]) => (bookedMap[roomId] ?? 0) >= cap)
+        .map(([roomId]) => roomId);
+
+      return { soldOut };
     }),
 });
 

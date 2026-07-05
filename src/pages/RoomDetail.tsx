@@ -29,6 +29,24 @@ export default function RoomDetail({ roomId, onBack }: RoomDetailProps) {
       : basePriceNote
     : basePriceNote
 
+  // Availability — check against today (single-day window) as a preview
+  function todayStr() {
+    const d = new Date()
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  }
+  function tomorrowStr() {
+    const d = new Date()
+    d.setDate(d.getDate() + 1)
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  }
+
+  const { data: availData } = trpc.reservation.checkAvailability.useQuery(
+    { roomId, checkIn: todayStr(), checkOut: tomorrowStr() },
+    { enabled: !!room }
+  )
+  const capacity = room?.capacity ?? 1
+  const isSoldOut = availData !== undefined && availData.bookedBeds >= capacity
+
   const handleReserve = () => {
     if (!room) return
     navigate(`/booking/confirm?roomId=${room.id}&guests=${guests}`)
@@ -279,33 +297,48 @@ export default function RoomDetail({ roomId, onBack }: RoomDetailProps) {
               marginBottom: '12px',
             }}
           >
-            {isPerBed ? 'Price per bed' : 'From'}
+            {isSoldOut ? 'Availability' : isPerBed ? 'Price per bed' : 'From'}
           </p>
-          <p
-            style={{
-              fontSize: 'clamp(36px, 4vw, 52px)',
-              fontWeight: 400,
-              letterSpacing: '-0.03em',
-              lineHeight: 1,
-              color: '#000000',
-              marginBottom: '6px',
-            }}
-          >
-            {displayPrice}
-          </p>
+          {isSoldOut ? (
+            <p
+              style={{
+                fontSize: 'clamp(24px, 3vw, 36px)',
+                fontWeight: 500,
+                letterSpacing: '-0.02em',
+                lineHeight: 1,
+                color: '#000000',
+                marginBottom: '6px',
+              }}
+            >
+              Sold Out
+            </p>
+          ) : (
+            <p
+              style={{
+                fontSize: 'clamp(36px, 4vw, 52px)',
+                fontWeight: 400,
+                letterSpacing: '-0.03em',
+                lineHeight: 1,
+                color: '#000000',
+                marginBottom: '6px',
+              }}
+            >
+              {displayPrice}
+            </p>
+          )}
           <p
             style={{
               fontSize: '13px',
               color: '#666666',
               lineHeight: 1.5,
-              marginBottom: isPerBed ? '16px' : '28px',
+              marginBottom: isPerBed && !isSoldOut ? '16px' : '28px',
             }}
           >
-            {displayPriceNote}
+            {isSoldOut ? 'No availability for today. Please check back later.' : displayPriceNote}
           </p>
 
           {/* Per-bed notice + guest selector */}
-          {isPerBed && (
+          {isPerBed && !isSoldOut && (
             <div
               style={{
                 backgroundColor: '#fafafa',
@@ -398,26 +431,26 @@ export default function RoomDetail({ roomId, onBack }: RoomDetailProps) {
 
           <button
             onClick={handleReserve}
-            disabled={authLoading}
-            onMouseEnter={() => setHovered(true)}
+            disabled={authLoading || isSoldOut}
+            onMouseEnter={() => { if (!isSoldOut) setHovered(true) }}
             onMouseLeave={() => setHovered(false)}
             style={{
               width: '100%',
               fontSize: '13px',
               fontWeight: 500,
               letterSpacing: '0.16em',
-              color: hovered ? '#ffffff' : '#000000',
-              backgroundColor: hovered ? '#000000' : '#ffffff',
-              border: '1px solid #000000',
+              color: isSoldOut ? '#999999' : hovered ? '#ffffff' : '#000000',
+              backgroundColor: isSoldOut ? '#f5f5f5' : hovered ? '#000000' : '#ffffff',
+              border: `1px solid ${isSoldOut ? '#cccccc' : '#000000'}`,
               padding: '16px 24px',
-              cursor: authLoading ? 'wait' : 'pointer',
+              cursor: authLoading || isSoldOut ? 'not-allowed' : 'pointer',
               textTransform: 'uppercase',
               transition: 'all 0.25s ease',
               fontFamily: '"Helvetica Neue", sans-serif',
               opacity: authLoading ? 0.6 : 1,
             }}
           >
-            Reserve This Room
+            {isSoldOut ? 'Not Available Today' : 'Reserve This Room'}
           </button>
           <button
             onClick={onBack}

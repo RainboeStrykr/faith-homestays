@@ -15,6 +15,12 @@ export interface Room {
   perBed?: boolean
   /** Maximum number of beds/guests selectable (defaults to 4) */
   maxGuests?: number
+  /**
+   * Total capacity of this listing (number of beds/units).
+   * A room is sold out when confirmed bookings for an overlapping date range
+   * consume all capacity. Defaults to 1 for standard rooms.
+   */
+  capacity?: number
 }
 
 export const rooms: Room[] = [
@@ -203,6 +209,7 @@ export const rooms: Room[] = [
     bed: 'Single bunk bed',
     perBed: true,
     maxGuests: 6,
+    capacity: 6,
   },
   {
     id: '09',
@@ -228,6 +235,7 @@ export const rooms: Room[] = [
     bed: 'Single bunk bed',
     perBed: true,
     maxGuests: 4,
+    capacity: 4,
   }
 ]
 

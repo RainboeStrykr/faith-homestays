@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { rooms, type Room } from '../data/rooms'
+import { trpc } from '@/providers/trpc'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -10,9 +11,27 @@ interface WorksProps {
   onSelectRoom: (id: string) => void
 }
 
+// Build capacity map once — { roomId: capacity }
+const capacities = Object.fromEntries(
+  rooms.map((r) => [r.id, r.capacity ?? 1])
+)
+
+// Today as YYYY-MM-DD in local time
+function todayStr() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
 export default function Works({ scrollRef: _scrollRef, onSelectRoom }: WorksProps) {
   const sectionRef = useRef<HTMLElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
+
+  const { data: availData } = trpc.reservation.getSoldOutRooms.useQuery({
+    date: todayStr(),
+    capacities,
+  })
+
+  const soldOutSet = new Set(availData?.soldOut ?? [])
 
   useEffect(() => {
     const section = sectionRef.current
@@ -91,7 +110,8 @@ export default function Works({ scrollRef: _scrollRef, onSelectRoom }: WorksProp
             <RoomCard
               key={room.id}
               room={room}
-              onClick={() => onSelectRoom(room.id)}
+              soldOut={soldOutSet.has(room.id)}
+              onClick={() => !soldOutSet.has(room.id) && onSelectRoom(room.id)}
             />
           ))}
         </div>
@@ -102,9 +122,11 @@ export default function Works({ scrollRef: _scrollRef, onSelectRoom }: WorksProp
 
 function RoomCard({
   room,
+  soldOut,
   onClick,
 }: {
   room: Room
+  soldOut: boolean
   onClick: () => void
 }) {
   const imgRef = useRef<HTMLImageElement>(null)
@@ -113,7 +135,9 @@ function RoomCard({
     <button
       onClick={onClick}
       className="work-item"
+      disabled={soldOut}
       onMouseEnter={() => {
+        if (soldOut) return
         if (imgRef.current) imgRef.current.style.transform = 'scale(1.03)'
       }}
       onMouseLeave={() => {
@@ -123,12 +147,13 @@ function RoomCard({
         border: '1px solid #000000',
         backgroundColor: '#ffffff',
         padding: 0,
-        cursor: 'pointer',
+        cursor: soldOut ? 'default' : 'pointer',
         textAlign: 'left',
         display: 'block',
         fontFamily: 'inherit',
         width: '100%',
         overflow: 'hidden',
+        opacity: soldOut ? 0.75 : 1,
       }}
     >
       <div
@@ -154,8 +179,27 @@ function RoomCard({
             objectFit: 'cover',
             display: 'block',
             transition: 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
+            filter: soldOut ? 'grayscale(40%)' : 'none',
           }}
         />
+        {soldOut && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '16px',
+              left: '16px',
+              backgroundColor: '#000000',
+              color: '#ffffff',
+              fontSize: '10px',
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              padding: '6px 12px',
+              fontFamily: '"Helvetica Neue", sans-serif',
+            }}
+          >
+            Sold Out
+          </div>
+        )}
       </div>
       <div
         style={{
@@ -195,12 +239,12 @@ function RoomCard({
           style={{
             fontSize: '12px',
             letterSpacing: '0.14em',
-            color: '#000000',
+            color: soldOut ? '#999999' : '#000000',
             textTransform: 'uppercase',
             whiteSpace: 'nowrap',
           }}
         >
-          View &rarr;
+          {soldOut ? 'Sold Out' : 'View →'}
         </span>
       </div>
     </button>
