@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { rooms } from '../data/rooms'
+import { rooms, calcTotalPrice } from '../data/rooms'
 import { useAuth } from '@/hooks/useAuth'
 import { useNavigate } from 'react-router'
 import { trpc } from '@/providers/trpc'
@@ -12,17 +12,26 @@ interface RoomDetailProps {
 export default function RoomDetail({ roomId, onBack }: RoomDetailProps) {
   const room = rooms.find((r) => r.id === roomId)
   const [hovered, setHovered] = useState(false)
+  const [guests, setGuests] = useState(1)
   const { isLoading: authLoading } = useAuth()
   const navigate = useNavigate()
 
   const { data: roomPrices } = trpc.listing.getRoomPrices.useQuery()
   const priceOverride = roomPrices?.find((p) => p.roomId === roomId)
-  const displayPrice = priceOverride?.price ?? room?.price
-  const displayPriceNote = priceOverride?.priceNote ?? room?.priceNote
+  const basePrice = priceOverride?.price ?? room?.price ?? ''
+  const basePriceNote = priceOverride?.priceNote ?? room?.priceNote ?? ''
+
+  const isPerBed = room?.perBed ?? false
+  const displayPrice = isPerBed ? calcTotalPrice(basePrice, guests) : basePrice
+  const displayPriceNote = isPerBed
+    ? guests > 1
+      ? `${guests} beds × ${basePrice} — ${basePriceNote}`
+      : basePriceNote
+    : basePriceNote
 
   const handleReserve = () => {
     if (!room) return
-    navigate(`/booking/confirm?roomId=${room.id}`)
+    navigate(`/booking/confirm?roomId=${room.id}&guests=${guests}`)
   }
 
   useEffect(() => {
@@ -270,7 +279,7 @@ export default function RoomDetail({ roomId, onBack }: RoomDetailProps) {
               marginBottom: '12px',
             }}
           >
-            From
+            {isPerBed ? 'Price per bed' : 'From'}
           </p>
           <p
             style={{
@@ -289,11 +298,89 @@ export default function RoomDetail({ roomId, onBack }: RoomDetailProps) {
               fontSize: '13px',
               color: '#666666',
               lineHeight: 1.5,
-              marginBottom: '28px',
+              marginBottom: isPerBed ? '16px' : '28px',
             }}
           >
             {displayPriceNote}
           </p>
+
+          {/* Per-bed notice + guest selector */}
+          {isPerBed && (
+            <div
+              style={{
+                backgroundColor: '#fafafa',
+                border: '1px solid #e5e5e5',
+                padding: '12px 14px',
+                marginBottom: '24px',
+              }}
+            >
+              <p
+                style={{
+                  fontSize: '11px',
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  color: '#555555',
+                  marginBottom: '10px',
+                }}
+              >
+                How many beds do you need?
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <button
+                  onClick={() => setGuests((g) => Math.max(1, g - 1))}
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    border: '1px solid #000',
+                    backgroundColor: '#fff',
+                    fontSize: '18px',
+                    lineHeight: 1,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  aria-label="Decrease beds"
+                >
+                  −
+                </button>
+                <span style={{ fontSize: '16px', fontWeight: 500, minWidth: '20px', textAlign: 'center' }}>
+                  {guests}
+                </span>
+                <button
+                  onClick={() => setGuests((g) => Math.min(room.maxGuests ?? 4, g + 1))}
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    border: '1px solid #000',
+                    backgroundColor: '#fff',
+                    fontSize: '18px',
+                    lineHeight: 1,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  aria-label="Increase beds"
+                >
+                  +
+                </button>
+                <span style={{ fontSize: '12px', color: '#888888' }}>
+                  {guests === 1 ? 'bed' : 'beds'}
+                </span>
+              </div>
+              <p
+                style={{
+                  fontSize: '11px',
+                  color: '#888888',
+                  marginTop: '8px',
+                  lineHeight: 1.5,
+                }}
+              >
+                Price scales with the number of beds booked.
+              </p>
+            </div>
+          )}
 
           <dl
             style={{

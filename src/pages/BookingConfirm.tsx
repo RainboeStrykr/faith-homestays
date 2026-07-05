@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
-import { rooms } from '../data/rooms'
+import { rooms, calcTotalPrice } from '../data/rooms'
 import { trpc } from '@/providers/trpc'
 import { useAuth } from '@/hooks/useAuth'
 
 export default function BookingConfirm() {
   const [searchParams] = useSearchParams()
   const roomId = searchParams.get('roomId')
+  const initialGuests = searchParams.get('guests') ?? '1'
   const navigate = useNavigate()
   
   // Require authentication
@@ -16,22 +17,33 @@ export default function BookingConfirm() {
   })
 
   const room = rooms.find((r) => r.id === roomId)
+  const isPerBed = room?.perBed ?? false
 
   // Fetch price overrides
   const { data: roomPrices } = trpc.listing.getRoomPrices.useQuery()
   const priceOverride = roomPrices?.find((p) => p.roomId === roomId)
-  const displayPrice = priceOverride?.price ?? room?.price
-  const displayPriceNote = priceOverride?.priceNote ?? room?.priceNote
+  const basePrice = priceOverride?.price ?? room?.price ?? ''
+  const basePriceNote = priceOverride?.priceNote ?? room?.priceNote ?? ''
 
   // Form states
   const [checkInDate, setCheckInDate] = useState('')
   const [checkOutDate, setCheckOutDate] = useState('')
-  const [guests, setGuests] = useState('2')
+  const [guests, setGuests] = useState(isPerBed ? initialGuests : '2')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
+  const [phoneError, setPhoneError] = useState('')
   const [message, setMessage] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
+
+  // Reactive price calculation for per-bed rooms
+  const guestCount = parseInt(guests, 10) || 1
+  const displayPrice = isPerBed ? calcTotalPrice(basePrice, guestCount) : basePrice
+  const displayPriceNote = isPerBed
+    ? guestCount > 1
+      ? `${guestCount} beds × ${basePrice} — ${basePriceNote}`
+      : basePriceNote
+    : basePriceNote
 
   // Pre-populate user info when user loads
   useEffect(() => {
@@ -59,6 +71,13 @@ export default function BookingConfirm() {
       return
     }
 
+    const digitsOnly = phone.replace(/\D/g, '')
+    if (digitsOnly.length !== 10) {
+      setPhoneError('Please enter a valid 10-digit phone number.')
+      return
+    }
+    setPhoneError('')
+
     createReservation.mutate({
       checkInDate,
       checkOutDate,
@@ -67,7 +86,7 @@ export default function BookingConfirm() {
       roomId: room.id,
       fullName,
       email,
-      phone,
+      phone: `+91${digitsOnly}`,
       message,
     })
   }
@@ -142,17 +161,25 @@ export default function BookingConfirm() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs uppercase tracking-wider text-neutral-500">Number of Guests</label>
+                    <label className="text-xs uppercase tracking-wider text-neutral-500">
+                      {isPerBed ? 'Number of Beds' : 'Number of Guests'}
+                    </label>
                     <select
                       value={guests}
                       onChange={(e) => setGuests(e.target.value)}
                       className="w-full bg-white border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:border-black"
                     >
-                      <option value="1">1 Guest</option>
-                      <option value="2">2 Guests</option>
-                      <option value="3">3 Guests</option>
-                      <option value="4">4 Guests</option>
+                      {Array.from({ length: room.maxGuests ?? 4 }, (_, i) => i + 1).map((n) => (
+                        <option key={n} value={n}>
+                          {n} {isPerBed ? (n === 1 ? 'Bed' : 'Beds') : (n === 1 ? 'Guest' : 'Guests')}
+                        </option>
+                      ))}
                     </select>
+                    {isPerBed && (
+                      <p className="text-[10px] text-neutral-400 pt-0.5">
+                        Price is per bed — total updates automatically.
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs uppercase tracking-wider text-neutral-500">Full Name</label>
@@ -181,14 +208,29 @@ export default function BookingConfirm() {
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs uppercase tracking-wider text-neutral-500">Phone Number</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="Enter phone number"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full bg-white border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:border-black"
-                    />
+                    <div className="flex">
+                      <span className="flex items-center px-3 bg-neutral-100 border border-r-0 border-neutral-300 text-sm text-neutral-600 select-none whitespace-nowrap">
+                        🇮🇳 +91
+                      </span>
+                      <input
+                        type="tel"
+                        required
+                        inputMode="numeric"
+                        maxLength={10}
+                        placeholder="10-digit number"
+                        value={phone}
+                        onChange={(e) => {
+                          // Only allow digits
+                          const digits = e.target.value.replace(/\D/g, '').slice(0, 10)
+                          setPhone(digits)
+                          if (phoneError) setPhoneError('')
+                        }}
+                        className={`flex-1 min-w-0 bg-white border px-3 py-2 text-sm focus:outline-none focus:border-black ${phoneError ? 'border-red-400' : 'border-neutral-300'}`}
+                      />
+                    </div>
+                    {phoneError && (
+                      <p className="text-xs text-red-600 pt-0.5">{phoneError}</p>
+                    )}
                   </div>
                 </div>
 
@@ -291,6 +333,12 @@ export default function BookingConfirm() {
                 <p className="text-[10px] text-neutral-400">{displayPriceNote}</p>
               </div>
             </div>
+
+            {isPerBed && guestCount > 1 && (
+              <div className="bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-800 leading-relaxed">
+                <span className="font-semibold">Per-bed pricing:</span> {guestCount} beds × {basePrice} = {displayPrice}
+              </div>
+            )}
           </div>
         </div>
       </div>

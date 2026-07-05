@@ -11,6 +11,10 @@ export interface Room {
   sqm: string
   occupancy: string
   bed: string
+  /** If true, price is per bed/person and multiplies by guest count */
+  perBed?: boolean
+  /** Maximum number of beds/guests selectable (defaults to 4) */
+  maxGuests?: number
 }
 
 export const rooms: Room[] = [
@@ -177,7 +181,7 @@ export const rooms: Room[] = [
   },
   {
     id: '08',
-    title: 'Premium AC Dormitory - Public Bunk',
+    title: 'Premium AC Dormitory - Mixed Bunk',
     client: 'Backpacker Dormitories',
     img: '/images/dorms-1.jpg',
     tagline: 'Cool, social, and premium comfort for the solo explorer.',
@@ -197,6 +201,8 @@ export const rooms: Room[] = [
     sqm: '18m²',
     occupancy: '1 guest',
     bed: 'Single bunk bed',
+    perBed: true,
+    maxGuests: 6,
   },
   {
     id: '09',
@@ -220,5 +226,31 @@ export const rooms: Room[] = [
     sqm: '18m²',
     occupancy: '1 guest',
     bed: 'Single bunk bed',
+    perBed: true,
+    maxGuests: 4,
   }
 ]
+
+/**
+ * Parses a price string like "₹1,650" and returns the numeric value.
+ * Returns null if the string can't be parsed.
+ */
+export function parsePriceValue(price: string): number | null {
+  // Strip currency symbols, spaces, commas — keep digits and decimal point
+  const cleaned = price.replace(/[^\d.]/g, '')
+  const val = parseFloat(cleaned)
+  return isNaN(val) ? null : val
+}
+
+/**
+ * Given a base price string and a guest count, returns the total price string.
+ * For perBed rooms the price scales linearly with guests.
+ * The currency prefix (₹) is preserved.
+ */
+export function calcTotalPrice(basePrice: string, guests: number): string {
+  const numeric = parsePriceValue(basePrice)
+  if (numeric === null) return basePrice
+  const total = numeric * guests
+  // Re-apply the ₹ prefix and format with commas
+  return '₹' + total.toLocaleString('en-IN')
+}
