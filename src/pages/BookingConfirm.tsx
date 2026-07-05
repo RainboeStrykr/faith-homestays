@@ -17,6 +17,12 @@ export default function BookingConfirm() {
 
   const room = rooms.find((r) => r.id === roomId)
 
+  // Fetch price overrides
+  const { data: roomPrices } = trpc.listing.getRoomPrices.useQuery()
+  const priceOverride = roomPrices?.find((p) => p.roomId === roomId)
+  const displayPrice = priceOverride?.price ?? room?.price
+  const displayPriceNote = priceOverride?.priceNote ?? room?.priceNote
+
   // Form states
   const [checkInDate, setCheckInDate] = useState('')
   const [checkOutDate, setCheckOutDate] = useState('')
@@ -281,8 +287,8 @@ export default function BookingConfirm() {
             <div className="flex justify-between items-baseline">
               <span className="text-sm uppercase tracking-wider text-neutral-500">Total Price:</span>
               <div className="text-right">
-                <p className="text-2xl font-semibold">{room.price}</p>
-                <p className="text-[10px] text-neutral-400">{room.priceNote}</p>
+                <p className="text-2xl font-semibold">{displayPrice}</p>
+                <p className="text-[10px] text-neutral-400">{displayPriceNote}</p>
               </div>
             </div>
           </div>

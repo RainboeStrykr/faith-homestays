@@ -42,6 +42,20 @@ export const reservationRequests = pgTable("reservation_requests", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const roomPrices = pgTable("room_prices", {
+  id: serial("id").primaryKey(),
+  roomId: varchar("room_id", { length: 32 }).notNull().unique(),
+  price: varchar("price", { length: 64 }).notNull(),
+  priceNote: varchar("price_note", { length: 128 }).notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export type RoomPrice = typeof roomPrices.$inferSelect;
+export type InsertRoomPrice = typeof roomPrices.$inferInsert;
+
 export type ReservationRequest = typeof reservationRequests.$inferSelect;
 export type InsertReservationRequest = typeof reservationRequests.$inferInsert;
 

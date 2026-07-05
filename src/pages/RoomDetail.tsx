@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { rooms } from '../data/rooms'
 import { useAuth } from '@/hooks/useAuth'
 import { useNavigate } from 'react-router'
+import { trpc } from '@/providers/trpc'
 
 interface RoomDetailProps {
   roomId: string
@@ -13,6 +14,11 @@ export default function RoomDetail({ roomId, onBack }: RoomDetailProps) {
   const [hovered, setHovered] = useState(false)
   const { isLoading: authLoading } = useAuth()
   const navigate = useNavigate()
+
+  const { data: roomPrices } = trpc.listing.getRoomPrices.useQuery()
+  const priceOverride = roomPrices?.find((p) => p.roomId === roomId)
+  const displayPrice = priceOverride?.price ?? room?.price
+  const displayPriceNote = priceOverride?.priceNote ?? room?.priceNote
 
   const handleReserve = () => {
     if (!room) return
@@ -276,7 +282,7 @@ export default function RoomDetail({ roomId, onBack }: RoomDetailProps) {
               marginBottom: '6px',
             }}
           >
-            {room.price}
+            {displayPrice}
           </p>
           <p
             style={{
@@ -286,7 +292,7 @@ export default function RoomDetail({ roomId, onBack }: RoomDetailProps) {
               marginBottom: '28px',
             }}
           >
-            {room.priceNote}
+            {displayPriceNote}
           </p>
 
           <dl

@@ -2,11 +2,18 @@ import { trpc } from '@/providers/trpc'
 import { useAuth } from '@/hooks/useAuth'
 import { useNavigate } from 'react-router'
 import { useState } from 'react'
+import { rooms } from '@/data/rooms'
 
 export default function Dashboard() {
   const navigate = useNavigate()
   const [cancellingId, setCancellingId] = useState<number | null>(null)
   const [updatingId, setUpdatingId] = useState<number | null>(null)
+
+  // Price editing state
+  const [editingPriceId, setEditingPriceId] = useState<string | null>(null)
+  const [priceInput, setPriceInput] = useState('')
+  const [priceNoteInput, setPriceNoteInput] = useState('')
+  const [savingPriceId, setSavingPriceId] = useState<string | null>(null)
 
   // Requires auth
   const { user, isLoading: authLoading } = useAuth({
@@ -61,6 +68,45 @@ export default function Dashboard() {
       setUpdatingId(null)
     }
   })
+
+  // Room price queries (admin only)
+  const { data: roomPrices, refetch: refetchPrices } = trpc.listing.getRoomPrices.useQuery(
+    undefined,
+    { enabled: !!user && isAdmin }
+  )
+
+  const updateRoomPrice = trpc.listing.updateRoomPrice.useMutation({
+    onSuccess: () => {
+      setSavingPriceId(null)
+      setEditingPriceId(null)
+      refetchPrices()
+    },
+    onError: (err) => {
+      alert(err.message || 'Failed to update price.')
+      setSavingPriceId(null)
+    },
+  })
+
+  const getPriceForRoom = (roomId: string) => {
+    const override = roomPrices?.find((p) => p.roomId === roomId)
+    return override ?? null
+  }
+
+  const handleEditPrice = (roomId: string, currentPrice: string, currentNote: string) => {
+    setEditingPriceId(roomId)
+    setPriceInput(currentPrice)
+    setPriceNoteInput(currentNote)
+  }
+
+  const handleSavePrice = (roomId: string) => {
+    if (!priceInput.trim()) return
+    setSavingPriceId(roomId)
+    updateRoomPrice.mutate({
+      roomId,
+      price: priceInput.trim(),
+      priceNote: priceNoteInput.trim() || 'per night, taxes included',
+    })
+  }
 
   const handleCancel = (id: number) => {
     if (window.confirm('Are you sure you want to cancel this reservation?')) {
@@ -280,6 +326,102 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+
+        {/* Admin: Manage Listing Prices */}
+        {isAdmin && (
+          <div className="space-y-6">
+            <div className="border-t border-neutral-200 pt-8">
+              <h2 className="text-lg uppercase tracking-wider font-medium mb-1">Manage Listing Prices</h2>
+              <p className="text-xs text-neutral-400 mb-6">
+                Override the default price for any listing. Changes take effect immediately on the booking pages.
+              </p>
+
+              <div className="grid grid-cols-1 gap-4">
+                {rooms.map((room) => {
+                  const override = getPriceForRoom(room.id)
+                  const activePrice = override?.price ?? room.price
+                  const activeNote = override?.priceNote ?? room.priceNote
+                  const isEditing = editingPriceId === room.id
+                  const isSaving = savingPriceId === room.id
+
+                  return (
+                    <div
+                      key={room.id}
+                      className="border border-neutral-200 bg-white p-5 flex flex-col sm:flex-row sm:items-center gap-4"
+                    >
+                      {/* Room Info */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] uppercase tracking-wider text-neutral-400 mb-0.5">
+                          {room.client}
+                        </p>
+                        <h3 className="text-sm font-medium truncate">{room.title}</h3>
+                        {override ? (
+                          <p className="text-xs text-neutral-500 mt-1">
+                            <span className="line-through text-neutral-400 mr-1">{room.price}</span>
+                            <span className="text-black font-semibold">{override.price}</span>
+                            <span className="text-neutral-400 ml-1">— {override.priceNote}</span>
+                            <span className="ml-2 text-[9px] uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 font-semibold">
+                              Overridden
+                            </span>
+                          </p>
+                        ) : (
+                          <p className="text-xs text-neutral-500 mt-1">
+                            <span className="font-medium text-black">{room.price}</span>
+                            <span className="text-neutral-400 ml-1">— {room.priceNote}</span>
+                            <span className="ml-2 text-[9px] uppercase tracking-wider text-neutral-400">Default</span>
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Edit Controls */}
+                      {isEditing ? (
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 min-w-0 sm:min-w-[420px]">
+                          <input
+                            type="text"
+                            value={priceInput}
+                            onChange={(e) => setPriceInput(e.target.value)}
+                            placeholder="e.g. ₹1,800"
+                            className="border border-neutral-300 px-3 py-2 text-sm w-full sm:w-32 focus:outline-none focus:border-black"
+                          />
+                          <input
+                            type="text"
+                            value={priceNoteInput}
+                            onChange={(e) => setPriceNoteInput(e.target.value)}
+                            placeholder="e.g. per night, taxes included"
+                            className="border border-neutral-300 px-3 py-2 text-sm w-full sm:flex-1 focus:outline-none focus:border-black"
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleSavePrice(room.id)}
+                              disabled={isSaving || !priceInput.trim()}
+                              className="bg-black hover:bg-neutral-900 text-white px-4 py-2 text-xs uppercase tracking-wider font-semibold transition disabled:opacity-50 whitespace-nowrap"
+                            >
+                              {isSaving ? 'Saving...' : 'Save'}
+                            </button>
+                            <button
+                              onClick={() => setEditingPriceId(null)}
+                              disabled={isSaving}
+                              className="border border-neutral-300 text-neutral-600 hover:bg-neutral-50 px-4 py-2 text-xs uppercase tracking-wider transition disabled:opacity-50"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleEditPrice(room.id, activePrice, activeNote)}
+                          className="border border-neutral-300 hover:border-black text-neutral-600 hover:text-black px-4 py-2 text-xs uppercase tracking-wider transition whitespace-nowrap"
+                        >
+                          Edit Price
+                        </button>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
