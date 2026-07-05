@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useNavigate } from 'react-router'
+import { trpc } from '@/providers/trpc'
 
 interface HeaderProps {
   scrollRef: React.MutableRefObject<{ y: number; speed: number }>
@@ -44,11 +45,17 @@ export default function Header({ scrollRef, forceLight = false }: HeaderProps) {
   }, [scrollRef])
 
   const overHero = overHeroRaw && !forceLight
-  const { user, isAuthenticated, logout } = useAuth({ redirectPath: '/' })
+  const { user, isAuthenticated } = useAuth({ redirectPath: '/' })
+
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      window.location.href = '/'
+    },
+  })
 
   const handleSignOut = () => {
     if (window.confirm("Do you want to sign out?")) {
-      logout()
+      logoutMutation.mutate()
     }
   }
 

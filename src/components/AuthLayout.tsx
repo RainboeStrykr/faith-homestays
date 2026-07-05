@@ -110,9 +110,10 @@ function AuthLayoutContent({
   const { user, logout } = useAuth();
   const handleSignOut = () => {
     if (window.confirm("Do you want to sign out?")) {
-      logout();
+      logout()
+      window.location.href = '/'
     }
-  };
+  }
   const location = useLocation();
   const navigate = useNavigate();
   const { state, toggleSidebar } = useSidebar();

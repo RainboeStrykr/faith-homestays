@@ -9,9 +9,16 @@ export default function Dashboard() {
   const [updatingId, setUpdatingId] = useState<number | null>(null)
 
   // Requires auth
-  const { user, isLoading: authLoading, logout } = useAuth({
+  const { user, isLoading: authLoading } = useAuth({
     redirectOnUnauthenticated: true,
     redirectPath: '/login',
+  })
+
+  // Dedicated logout mutation — redirects only after cookie is cleared
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      window.location.href = '/'
+    },
   })
 
   const isAdmin = user?.role === 'admin'
@@ -104,7 +111,11 @@ export default function Dashboard() {
               Back to Home
             </button>
             <button
-              onClick={logout}
+              onClick={() => {
+                if (window.confirm("Do you want to sign out?")) {
+                  logoutMutation.mutate()
+                }
+              }}
               className="bg-black hover:bg-neutral-900 text-white px-5 py-2.5 text-xs uppercase tracking-wider transition"
             >
               Sign Out
