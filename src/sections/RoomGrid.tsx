@@ -6,7 +6,7 @@ import { trpc } from '@/providers/trpc'
 
 gsap.registerPlugin(ScrollTrigger)
 
-interface WorksProps {
+interface RoomGridProps {
   scrollRef: React.MutableRefObject<{ y: number; speed: number }>
   onSelectRoom: (id: string) => void
 }
@@ -22,7 +22,7 @@ function todayStr() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-export default function Works({ scrollRef: _scrollRef, onSelectRoom }: WorksProps) {
+export default function RoomGrid({ scrollRef: _scrollRef, onSelectRoom }: RoomGridProps) {
   const sectionRef = useRef<HTMLElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
 

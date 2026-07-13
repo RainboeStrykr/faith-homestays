@@ -28,7 +28,7 @@ export const rooms: Room[] = [
     id: '01',
     title: 'Standard Deluxe Cosy Room',
     client: 'Premium & Family Collection',
-    img: '/images/room-deluxe.jpg',
+    img: '/images/standard-deluxe-cosy.png',
     tagline: 'Premium comfort with a cosy, intimate touch.',
     description: [
       'Experience premium hospitality in our thoughtfully designed Cosy Room. Perfect for travellers who prefer a snug, warm atmosphere, this room features a plush double bed and the ultimate convenience of a private attached washroom.',
@@ -51,7 +51,7 @@ export const rooms: Room[] = [
     id: '02',
     title: 'Superior Deluxe AC Room',
     client: 'Premium & Family Collection',
-    img: '/images/room-superior.jpg',
+    img: '/images/superior-deluxe-ac.png',
     tagline: 'The pinnacle of premium comfort and climate-controlled luxury.',
     description: [
       'Indulge in our top-tier Superior Deluxe Room, where luxury meets perfect climate control. Designed for guests who refuse to compromise on comfort, this premium suite offers a spacious double bed, a pristine attached washroom, and powerful air conditioning.',
@@ -74,7 +74,7 @@ export const rooms: Room[] = [
     id: '03',
     title: 'Premium Family Suite',
     client: 'Premium & Family Collection',
-    img: '/images/room-family.jpg',
+    img: '/images/premium-family-suite.png',
     tagline: 'Spacious, premium accommodations designed for family togetherness.',
     description: [
       'Create unforgettable memories with our expansive Family Suite. Tailored specifically for groups and families, this premium room features a comfortable triple-bed setup and powerful air conditioning to keep everyone cool and relaxed.',
@@ -120,7 +120,7 @@ export const rooms: Room[] = [
     id: '05',
     title: 'Standard Backpacker\'s Twin Room',
     client: 'Standard Comfort & Value Rooms',
-    img: '/images/room-backpacker.jpg',
+    img: '/images/standard-backpackers-twin.png',
     tagline: 'Affordable, friendly, and perfectly sized for travelling companions.',
     description: [
       'Hit the road without breaking the bank in our Standard Backpacker\'s Room. Designed with the budget-conscious explorer in mind, this room offers two comfortable beds, making it perfect for friends travelling together.',
@@ -166,7 +166,7 @@ export const rooms: Room[] = [
     id: '07',
     title: 'Standard Single Room',
     client: 'Standard Comfort & Value Rooms',
-    img: '/images/room-standard.jpg',
+    img: '/images/standard-single-room.png',
     tagline: 'Simple, clean, and incredibly affordable.',
     description: [
       'Looking for the ultimate budget-friendly basecamp? Our Standard Single Room offers exactly what you need for a good night\'s sleep without the extra cost. Featuring a cosy single bed and a straightforward, clean setup.',

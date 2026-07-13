@@ -168,7 +168,7 @@ export default function Header({ scrollRef, forceLight = false }: HeaderProps) {
 
         {/* Hamburger button — visible below md */}
         <button
-          className="flex md:hidden"
+          className="md:hidden"
           onClick={() => setMenuOpen((o) => !o)}
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={menuOpen}
@@ -178,7 +178,6 @@ export default function Header({ scrollRef, forceLight = false }: HeaderProps) {
             cursor: 'pointer',
             padding: '8px',
             zIndex: 201,
-            display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',

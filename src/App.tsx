@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Routes, Route } from 'react-router'
 import Header from './sections/Header'
-import Philosophy from './sections/Philosophy'
-import Works from './sections/Works'
-import Capabilities from './sections/Capabilities'
-import Spatial from './sections/Spatial'
+import Ethos from './sections/Ethos'
+import RoomGrid from './sections/RoomGrid'
+import Amenities from './sections/Amenities'
+import Hero from './sections/Hero'
 import Gallery from './sections/Gallery'
 import Testimonials from './sections/Testimonials'
 import CTA from './sections/CTA'
@@ -71,10 +71,10 @@ function App() {
             <RoomDetail roomId={currentRoomId} onBack={handleBack} />
           ) : (
             <main>
-              <Spatial />
-              <Philosophy />
-              <Works scrollRef={scrollRef} onSelectRoom={handleSelectRoom} />
-              <Capabilities />
+              <Hero />
+              <Ethos />
+              <RoomGrid scrollRef={scrollRef} onSelectRoom={handleSelectRoom} />
+              <Amenities />
               <Gallery />
               <Testimonials />
             </main>

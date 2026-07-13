@@ -12,7 +12,7 @@ const services: { label: string; detail: string }[] = [
   { label: 'Parking', detail: 'Secure on-site parking available' },
 ]
 
-export default function Capabilities() {
+export default function Amenities() {
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
 

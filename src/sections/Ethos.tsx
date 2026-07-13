@@ -6,7 +6,7 @@ gsap.registerPlugin(ScrollTrigger)
 
 const tags = ['Homely', 'Hygienic', 'Affordable']
 
-export default function Philosophy() {
+export default function Ethos() {
   const sectionRef = useRef<HTMLElement>(null)
   const textRef = useRef<HTMLParagraphElement>(null)
   const tagsRef = useRef<HTMLDivElement>(null)
