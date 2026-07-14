@@ -170,7 +170,7 @@ export const reservationRouter = createRouter({
 
       // A room is sold out when booked >= capacity
       const soldOut = Object.entries(input.capacities)
-        .filter(([roomId, cap]) => (bookedMap[roomId] ?? 0) >= cap)
+        .filter(([roomId, cap]) => (bookedMap[roomId] ?? 0) >= (cap as number))
         .map(([roomId]) => roomId);
 
       return { soldOut };
