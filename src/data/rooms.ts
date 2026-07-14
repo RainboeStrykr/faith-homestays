@@ -97,7 +97,7 @@ export const rooms: Room[] = [
     id: '04',
     title: 'Standard Deluxe AC Room',
     client: 'Standard Comfort & Value Rooms',
-    img: '/images/room-standard.jpg',
+    img: '/images/standard-deluxe-ac.png',
     tagline: 'The perfect balance of modern comfort and everyday value.',
     description: [
       'Upgrade your stay with our Standard Deluxe Room, offering the refreshing comfort of air conditioning at a highly competitive price. Featuring a comfortable double bed and a welcoming standard-tier ambience.',
@@ -106,7 +106,7 @@ export const rooms: Room[] = [
     features: [
       'Air-conditioned standard room',
       'Comfortable double bed',
-      'Access to clean, well-maintained shared washrooms',
+      'Access to TV and clean, well-maintained shared washrooms',
       'Great value for money',
       'Ideal for budget-conscious travellers who want the comfort of AC'
     ],
@@ -143,15 +143,15 @@ export const rooms: Room[] = [
     id: '06',
     title: 'Standard Cosy Room',
     client: 'Standard Comfort & Value Rooms',
-    img: '/images/room-triple.jpg',
+    img: '/images/standard-cosy-single.png',
     tagline: 'A warm, budget-friendly haven for your travels.',
     description: [
-      'Unwind in our charming Standard Cosy Room, designed to provide a warm and inviting atmosphere at an unbeatable price. Featuring a comfortable separate double bed and a relaxed non-AC environment.',
-      'This room is a fantastic choice for solo travellers or couples looking for a simple, clean, and economical place to rest, recharge, and enjoy their stay without unnecessary expenses.'
+      'Unwind in our charming Standard Cosy Room, designed to provide a warm and inviting atmosphere at an unbeatable price. Featuring a comfortable single bed and a relaxed non-AC environment.',
+      'This room is a fantastic choice for solo travellers looking for a simple, clean, and economical place to rest, recharge, and enjoy their stay without unnecessary expenses.'
     ],
     features: [
       'Non-AC cosy environment',
-      'Separate double bed setup',
+      'Single bed setup',
       'Highly economical pricing',
       'Access to shared washrooms',
       'Perfect for short stays, transit passengers, and budget travellers'
@@ -159,8 +159,8 @@ export const rooms: Room[] = [
     price: '₹1,050',
     priceNote: 'per night, taxes included',
     sqm: '20m²',
-    occupancy: '2 guests',
-    bed: 'Double bed',
+    occupancy: '1 guest',
+    bed: 'Single bed',
   },
   {
     id: '07',
