@@ -18,7 +18,7 @@ const footerLinks = [
       { label: "Our Rooms", href: "#rooms" },
       { label: "Amenities", href: "#amenities" },
       { label: "Gallery", href: "#gallery" },
-      { label: "Book Your Stay", href: "#contact" },
+      { label: "Book Your Stay", href: "https://wa.me/918918803065" },
     ],
   },
   {
@@ -117,6 +117,8 @@ export default function Footer() {
                   <li key={link.label}>
                     <a
                       href={link.href}
+                      target={link.href.startsWith('http') ? '_blank' : undefined}
+                      rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                       style={linkStyle}
                       onMouseEnter={(e) => ((e.target as HTMLAnchorElement).style.color = "#fee600")}
                       onMouseLeave={(e) => ((e.target as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)")}

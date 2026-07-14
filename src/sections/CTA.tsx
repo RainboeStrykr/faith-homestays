@@ -8,7 +8,7 @@ export default function CTA() {
       primaryLabel="Explore Rooms"
       primaryHref="#rooms"
       secondaryLabel="Contact Us"
-      secondaryHref="#contact"
+      secondaryHref="https://wa.me/918918803065"
     />
   );
 }

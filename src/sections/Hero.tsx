@@ -154,15 +154,17 @@ export default function Hero() {
           >
             Explore Rooms <span style={{ fontSize: '15px' }}>→</span>
           </button>
-          <button
-            onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
+          <a
+            href="https://wa.me/918918803065"
+            target="_blank"
+            rel="noopener noreferrer"
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(255,255,255,0.08)'
-              ;(e.currentTarget as HTMLButtonElement).style.color = '#ffffff'
+              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'rgba(255,255,255,0.08)'
+              ;(e.currentTarget as HTMLAnchorElement).style.color = '#ffffff'
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent'
-              ;(e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.7)'
+              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'transparent'
+              ;(e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.7)'
             }}
             style={{
               display: 'inline-flex',
@@ -178,10 +180,11 @@ export default function Hero() {
               transition: 'all 0.25s ease',
               textTransform: 'uppercase',
               fontFamily: '"Helvetica Neue", sans-serif',
+              textDecoration: 'none',
             }}
           >
             Contact Us
-          </button>
+          </a>
         </div>
       </div>
     </section>

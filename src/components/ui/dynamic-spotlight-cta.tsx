@@ -204,6 +204,8 @@ export function DynamicSpotlightCTA({
             {secondaryLabel && secondaryHref && (
               <a
                 href={secondaryHref}
+                target={secondaryHref.startsWith('http') ? '_blank' : undefined}
+                rel={secondaryHref.startsWith('http') ? 'noopener noreferrer' : undefined}
                 onMouseEnter={() => setSecondaryHovered(true)}
                 onMouseLeave={() => setSecondaryHovered(false)}
                 style={{
