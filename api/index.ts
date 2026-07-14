@@ -6,10 +6,6 @@ import { appRouter } from "./router";
 import { createContext } from "./context";
 import { createOAuthCallbackHandler } from "./auth0/auth";
 
-export const config = {
-  runtime: "nodejs20.x",
-};
-
 const app = new Hono().basePath("/api");
 
 app.use(bodyLimit({ maxSize: 50 * 1024 * 1024 }));
