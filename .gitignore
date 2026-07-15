@@ -13,7 +13,7 @@ node_modules/
 *.db
 *.sqlite
 *.sqlite3
-db/migrations/*.sql
+# db/migrations/*.sql  <-- migrations must be committed for deployment
 
 # TypeScript cache
 *.tsbuildinfo
