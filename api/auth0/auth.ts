@@ -101,7 +101,9 @@ export function createOAuthCallbackHandler() {
     }
 
     try {
-      const redirectUri = `${c.req.header("x-forwarded-proto") || "http"}://${c.req.header("host")}/api/auth/callback`;
+      const proto = (c.req.header("x-forwarded-proto") || "https").split(",")[0].trim();
+      const host = c.req.header("x-forwarded-host") || c.req.header("host") || "";
+      const redirectUri = `${proto}://${host}/api/auth/callback`;
       const tokenResp = await exchangeAuthCode(code, redirectUri);
       const userInfo = await verifyIdToken(tokenResp.id_token);
 

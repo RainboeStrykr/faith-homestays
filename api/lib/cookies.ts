@@ -11,7 +11,10 @@ export function getSessionCookieOptions(headers: Headers): CookieOptions {
   return {
     httpOnly: true,
     path: "/",
-    sameSite: localhost ? "Lax" : "None",
+    // Use Lax everywhere — the API and frontend share the same domain so
+    // Lax is both safe and doesn't require the Secure flag dance.
+    // On localhost this also works correctly.
+    sameSite: "Lax",
     secure: !localhost,
   };
 }
