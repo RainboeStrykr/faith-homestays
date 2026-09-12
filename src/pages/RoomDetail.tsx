@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { rooms, calcTotalPrice } from '../data/rooms'
-import { useAuth } from '@/hooks/useAuth'
 import { useNavigate } from 'react-router'
 import { trpc } from '@/providers/trpc'
 
@@ -13,7 +12,6 @@ export default function RoomDetail({ roomId, onBack }: RoomDetailProps) {
   const room = rooms.find((r) => r.id === roomId)
   const [hovered, setHovered] = useState(false)
   const [guests, setGuests] = useState(1)
-  const { isLoading: authLoading } = useAuth()
   const navigate = useNavigate()
 
   const { data: roomPrices } = trpc.listing.getRoomPrices.useQuery()
@@ -431,7 +429,7 @@ export default function RoomDetail({ roomId, onBack }: RoomDetailProps) {
 
           <button
             onClick={handleReserve}
-            disabled={authLoading || isSoldOut}
+            disabled={isSoldOut}
             onMouseEnter={() => { if (!isSoldOut) setHovered(true) }}
             onMouseLeave={() => setHovered(false)}
             style={{
@@ -443,11 +441,10 @@ export default function RoomDetail({ roomId, onBack }: RoomDetailProps) {
               backgroundColor: isSoldOut ? '#f5f5f5' : hovered ? '#000000' : '#ffffff',
               border: `1px solid ${isSoldOut ? '#cccccc' : '#000000'}`,
               padding: '16px 24px',
-              cursor: authLoading || isSoldOut ? 'not-allowed' : 'pointer',
+              cursor: isSoldOut ? 'not-allowed' : 'pointer',
               textTransform: 'uppercase',
               transition: 'all 0.25s ease',
               fontFamily: '"Helvetica Neue", sans-serif',
-              opacity: authLoading ? 0.6 : 1,
             }}
           >
             {isSoldOut ? 'Not Available Today' : 'Reserve This Room'}

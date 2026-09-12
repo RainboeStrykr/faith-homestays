@@ -5,30 +5,12 @@ import {
   varchar,
   text,
   timestamp,
-  integer,
 } from "drizzle-orm/pg-core";
 
-export const roleEnum = pgEnum("role", ["user", "admin"]);
 export const statusEnum = pgEnum("status", ["pending", "confirmed", "cancelled"]);
-
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  auth0Sub: varchar("auth0_sub", { length: 255 }).notNull().unique(),
-  name: varchar("name", { length: 255 }),
-  email: varchar("email", { length: 320 }),
-  avatar: text("avatar"),
-  role: roleEnum("role").default("user").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .notNull()
-    .$onUpdate(() => new Date()),
-  lastSignInAt: timestamp("last_sign_in_at").defaultNow().notNull(),
-});
 
 export const reservationRequests = pgTable("reservation_requests", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id"),
   checkInDate: varchar("check_in_date", { length: 64 }).notNull(),
   checkOutDate: varchar("check_out_date", { length: 64 }).notNull(),
   guests: varchar("guests", { length: 32 }).notNull(),
@@ -58,6 +40,3 @@ export type InsertRoomPrice = typeof roomPrices.$inferInsert;
 
 export type ReservationRequest = typeof reservationRequests.$inferSelect;
 export type InsertReservationRequest = typeof reservationRequests.$inferInsert;
-
-export type User = typeof users.$inferSelect;
-export type InsertUser = typeof users.$inferInsert;

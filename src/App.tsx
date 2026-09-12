@@ -10,7 +10,7 @@ import Testimonials from './sections/Testimonials'
 import CTA from './sections/CTA'
 import Footer from './sections/Footer'
 import Preloader from './sections/Preloader'
-import Login from './pages/Login'
+import AdminLogin from './pages/AdminLogin'
 import BookingConfirm from './pages/BookingConfirm'
 import Dashboard from './pages/Dashboard'
 import RoomDetail from './pages/RoomDetail'
@@ -46,20 +46,20 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin" element={
+        <>
+          <Preloader />
+          <Header scrollRef={scrollRef} forceLight={true} />
+          <Dashboard />
+          <Footer />
+        </>
+      } />
       <Route path="/booking/confirm" element={
         <>
           <Preloader />
           <Header scrollRef={scrollRef} forceLight={true} />
           <BookingConfirm />
-          <Footer />
-        </>
-      } />
-      <Route path="/dashboard" element={
-        <>
-          <Preloader />
-          <Header scrollRef={scrollRef} forceLight={true} />
-          <Dashboard />
           <Footer />
         </>
       } />

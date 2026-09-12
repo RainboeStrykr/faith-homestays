@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useAuth } from '@/hooks/useAuth'
 import { useNavigate } from 'react-router'
-import { trpc } from '@/providers/trpc'
 
 interface HeaderProps {
   scrollRef: React.MutableRefObject<{ y: number; speed: number }>
@@ -10,22 +8,6 @@ interface HeaderProps {
 
 const navItems = ['Rooms', 'Amenities', 'Gallery', 'Contact']
 const sectionIds = ['#rooms', '#amenities', '#gallery', '#contact']
-
-function getOAuthUrl() {
-  const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN
-  const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID
-  const redirectUri = `${window.location.origin}/api/auth/callback`
-
-  const url = new URL(`https://${auth0Domain}/authorize`)
-  url.searchParams.set('client_id', clientId)
-  url.searchParams.set('redirect_uri', redirectUri)
-  url.searchParams.set('response_type', 'code')
-  url.searchParams.set('scope', 'openid profile email')
-  url.searchParams.set('connection', 'google-oauth2')
-  url.searchParams.set('state', window.location.pathname || '/')
-
-  return url.toString()
-}
 
 export default function Header({ scrollRef, forceLight = false }: HeaderProps) {
   const [isCompact, setIsCompact] = useState(false)
@@ -52,19 +34,6 @@ export default function Header({ scrollRef, forceLight = false }: HeaderProps) {
   }, [menuOpen])
 
   const overHero = overHeroRaw && !forceLight
-  const { user, isAuthenticated } = useAuth({ redirectPath: '/' })
-
-  const logoutMutation = trpc.auth.logout.useMutation({
-    onSuccess: () => {
-      window.location.href = '/'
-    },
-  })
-
-  const handleSignOut = () => {
-    if (window.confirm("Do you want to sign out?")) {
-      logoutMutation.mutate()
-    }
-  }
 
   const handleNavClick = (index: number) => {
     setMenuOpen(false)
@@ -144,26 +113,6 @@ export default function Header({ scrollRef, forceLight = false }: HeaderProps) {
               onClick={() => handleNavClick(i)}
             />
           ))}
-          {isAuthenticated && user && (
-            <NavItem
-              label="Dashboard"
-              overHero={overHero}
-              onClick={() => navigate('/dashboard')}
-            />
-          )}
-          {isAuthenticated && user ? (
-            <NavItem
-              label="Sign Out"
-              overHero={overHero}
-              onClick={handleSignOut}
-            />
-          ) : (
-            <NavItem
-              label="Sign In"
-              overHero={overHero}
-              onClick={() => { window.location.href = getOAuthUrl() }}
-            />
-          )}
         </nav>
 
         {/* Hamburger button — visible below md */}
@@ -278,65 +227,6 @@ export default function Header({ scrollRef, forceLight = false }: HeaderProps) {
 
         {/* Auth actions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '32px' }}>
-          {isAuthenticated && user && (
-            <button
-              onClick={() => { setMenuOpen(false); navigate('/dashboard') }}
-              style={{
-                width: '100%',
-                padding: '16px',
-                background: '#000000',
-                color: '#ffffff',
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: '"Helvetica Neue", sans-serif',
-                fontSize: '12px',
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase',
-                fontWeight: 500,
-              }}
-            >
-              Dashboard
-            </button>
-          )}
-          {isAuthenticated && user ? (
-            <button
-              onClick={() => { setMenuOpen(false); handleSignOut() }}
-              style={{
-                width: '100%',
-                padding: '16px',
-                background: 'transparent',
-                color: '#000000',
-                border: '1px solid #000000',
-                cursor: 'pointer',
-                fontFamily: '"Helvetica Neue", sans-serif',
-                fontSize: '12px',
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase',
-                fontWeight: 500,
-              }}
-            >
-              Sign Out
-            </button>
-          ) : (
-            <button
-              onClick={() => { setMenuOpen(false); window.location.href = getOAuthUrl() }}
-              style={{
-                width: '100%',
-                padding: '16px',
-                background: '#000000',
-                color: '#ffffff',
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: '"Helvetica Neue", sans-serif',
-                fontSize: '12px',
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase',
-                fontWeight: 500,
-              }}
-            >
-              Sign In
-            </button>
-          )}
         </div>
       </div>
     </>

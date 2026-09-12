@@ -1,6 +1,6 @@
 export const Session = {
   cookieName: "auth_sid",
-  maxAgeMs: 365 * 24 * 60 * 60 * 1000,
+  maxAgeMs: 30 * 24 * 60 * 60 * 1000, // 30 days
 } as const;
 
 export const ErrorMessages = {
@@ -9,6 +9,5 @@ export const ErrorMessages = {
 } as const;
 
 export const Paths = {
-  login: "/login",
-  oauthCallback: "/api/auth/callback",
+  admin: "/admin",
 } as const;

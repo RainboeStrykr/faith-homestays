@@ -1,11 +1,15 @@
 import { z } from "zod";
-import { createRouter, authedQuery, adminQuery, publicQuery } from "./middleware";
+import { createRouter, adminQuery, publicQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { reservationRequests } from "@db/schema";
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, and, sql, count } from "drizzle-orm";
 
 export const reservationRouter = createRouter({
-  create: authedQuery
+  /**
+   * Public — any visitor can submit a reservation request.
+   * No login required.
+   */
+  create: publicQuery
     .input(
       z.object({
         checkInDate: z.string(),
@@ -19,10 +23,9 @@ export const reservationRouter = createRouter({
         message: z.string().optional(),
       })
     )
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input }) => {
       const db = getDb();
       const result = await db.insert(reservationRequests).values({
-        userId: ctx.user.id,
         checkInDate: input.checkInDate,
         checkOutDate: input.checkOutDate,
         guests: input.guests,
@@ -37,43 +40,40 @@ export const reservationRouter = createRouter({
       return { id: result[0].id, success: true };
     }),
 
-  myReservations: authedQuery
-    .query(async ({ ctx }) => {
-      const db = getDb();
-      const results = await db
-        .select()
-        .from(reservationRequests)
-        .where(eq(reservationRequests.userId, ctx.user.id))
-        .orderBy(desc(reservationRequests.createdAt));
-      return results;
-    }),
-
-  cancel: authedQuery
-    .input(z.object({ id: z.number() }))
-    .mutation(async ({ input, ctx }) => {
-      const db = getDb();
-      await db
-        .update(reservationRequests)
-        .set({ status: "cancelled" })
-        .where(
-          and(
-            eq(reservationRequests.id, input.id),
-            eq(reservationRequests.userId, ctx.user.id)
-          )
-        );
-      return { success: true };
-    }),
-
+  /**
+   * Admin only — returns paginated reservation requests, newest first.
+   */
   allReservations: adminQuery
-    .query(async () => {
+    .input(z.object({
+      page: z.number().int().min(1).default(1),
+      pageSize: z.number().int().min(1).max(100).default(10),
+    }))
+    .query(async ({ input }) => {
       const db = getDb();
-      const results = await db
-        .select()
-        .from(reservationRequests)
-        .orderBy(desc(reservationRequests.createdAt));
-      return results;
+      const offset = (input.page - 1) * input.pageSize;
+
+      const [rows, totalResult] = await Promise.all([
+        db.select()
+          .from(reservationRequests)
+          .orderBy(desc(reservationRequests.createdAt))
+          .limit(input.pageSize)
+          .offset(offset),
+        db.select({ total: count() }).from(reservationRequests),
+      ]);
+
+      const total = Number(totalResult[0]?.total ?? 0);
+      return {
+        reservations: rows,
+        total,
+        page: input.page,
+        pageSize: input.pageSize,
+        totalPages: Math.ceil(total / input.pageSize),
+      };
     }),
 
+  /**
+   * Admin only — update the status of any reservation.
+   */
   updateStatus: adminQuery
     .input(
       z.object({
@@ -91,6 +91,16 @@ export const reservationRouter = createRouter({
     }),
 
   /**
+   * Admin only — delete all reservation requests.
+   */
+  deleteAll: adminQuery
+    .mutation(async () => {
+      const db = getDb();
+      await db.delete(reservationRequests);
+      return { success: true };
+    }),
+
+  /**
    * Public — checks whether a room has remaining capacity for the given dates.
    * Returns the total confirmed beds booked for overlapping reservations so the
    * caller can compare against the room's capacity.
@@ -101,79 +111,65 @@ export const reservationRouter = createRouter({
     .input(
       z.object({
         roomId: z.string(),
-        checkIn: z.string(),  // YYYY-MM-DD
-        checkOut: z.string(), // YYYY-MM-DD
+        checkIn: z.string(),
+        checkOut: z.string(),
       })
     )
     .query(async ({ input }) => {
+      if (!input.roomId || !input.checkIn || !input.checkOut) {
+        return { bookedBeds: 0 };
+      }
       const db = getDb();
       const rows = await db
-        .select({ guests: reservationRequests.guests })
+        .select({ total: sql<number>`coalesce(sum(cast(${reservationRequests.guests} as int)), 0)` })
         .from(reservationRequests)
         .where(
           and(
             eq(reservationRequests.roomId, input.roomId),
             eq(reservationRequests.status, "confirmed"),
-            // overlapping: existing.checkIn < requested.checkOut AND existing.checkOut > requested.checkIn
             sql`${reservationRequests.checkInDate} < ${input.checkOut}`,
-            sql`${reservationRequests.checkOutDate} > ${input.checkIn}`
+            sql`${reservationRequests.checkOutDate} > ${input.checkIn}`,
           )
         );
-
-      const bookedBeds = rows.reduce(
-        (sum, r) => sum + (parseInt(r.guests, 10) || 1),
-        0
-      );
-
-      return { bookedBeds };
+      return { bookedBeds: Number(rows[0]?.total ?? 0) };
     }),
 
   /**
-   * Public — returns a list of roomIds that are fully sold out today.
-   * Used by the homepage grid to badge sold-out rooms without needing
-   * per-room queries.
+   * Public — for a given arrival date and a capacity map, returns the set of
+   * roomIds that are fully booked (confirmed bookings >= capacity).
    */
   getSoldOutRooms: publicQuery
     .input(
       z.object({
-        /** ISO date string YYYY-MM-DD representing "today" */
         date: z.string(),
-        /** Map of roomId -> capacity so the server can evaluate sold-out status */
         capacities: z.record(z.string(), z.number()),
       })
     )
     .query(async ({ input }) => {
       const db = getDb();
-
-      // All confirmed reservations that cover `date` (checkIn <= date < checkOut)
       const rows = await db
         .select({
           roomId: reservationRequests.roomId,
-          guests: reservationRequests.guests,
+          total: sql<number>`coalesce(sum(cast(${reservationRequests.guests} as int)), 0)`,
         })
         .from(reservationRequests)
         .where(
           and(
             eq(reservationRequests.status, "confirmed"),
             sql`${reservationRequests.checkInDate} <= ${input.date}`,
-            sql`${reservationRequests.checkOutDate} > ${input.date}`
+            sql`${reservationRequests.checkOutDate} > ${input.date}`,
           )
-        );
+        )
+        .groupBy(reservationRequests.roomId);
 
-      // Sum guests per roomId
-      const bookedMap: Record<string, number> = {};
+      const soldOut: string[] = [];
       for (const row of rows) {
         if (!row.roomId) continue;
-        bookedMap[row.roomId] =
-          (bookedMap[row.roomId] ?? 0) + (parseInt(row.guests, 10) || 1);
+        const capacity = input.capacities[row.roomId] ?? Infinity;
+        if (Number(row.total) >= capacity) {
+          soldOut.push(row.roomId);
+        }
       }
-
-      // A room is sold out when booked >= capacity
-      const soldOut = Object.entries(input.capacities)
-        .filter(([roomId, cap]) => (bookedMap[roomId] ?? 0) >= (cap as number))
-        .map(([roomId]) => roomId);
-
       return { soldOut };
     }),
 });
-

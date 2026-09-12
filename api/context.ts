@@ -1,21 +1,25 @@
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
-import type { User } from "@db/schema";
-import { authenticateRequest } from "./auth0/auth";
+import * as cookie from "cookie";
+import { Session } from "@contracts/constants";
+import { verifyAdminSessionToken } from "./auth0/session";
 
 export type TrpcContext = {
   req: Request;
   resHeaders: Headers;
-  user?: User;
+  isAdmin: boolean;
 };
 
 export async function createContext(
   opts: FetchCreateContextFnOptions,
 ): Promise<TrpcContext> {
-  const ctx: TrpcContext = { req: opts.req, resHeaders: opts.resHeaders };
-  try {
-    ctx.user = await authenticateRequest(opts.req.headers);
-  } catch {
-    // Authentication is optional here
+  const cookies = cookie.parse(opts.req.headers.get("cookie") || "");
+  const token = cookies[Session.cookieName];
+
+  let isAdmin = false;
+  if (token) {
+    const payload = await verifyAdminSessionToken(token);
+    isAdmin = payload?.role === "admin";
   }
-  return ctx;
+
+  return { req: opts.req, resHeaders: opts.resHeaders, isAdmin };
 }

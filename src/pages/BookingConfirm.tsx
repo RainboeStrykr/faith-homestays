@@ -1,20 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { rooms, calcTotalPrice } from '../data/rooms'
 import { trpc } from '@/providers/trpc'
-import { useAuth } from '@/hooks/useAuth'
 
 export default function BookingConfirm() {
   const [searchParams] = useSearchParams()
   const roomId = searchParams.get('roomId')
   const initialGuests = searchParams.get('guests') ?? '1'
   const navigate = useNavigate()
-  
-  // Require authentication
-  const { user, isLoading: authLoading } = useAuth({
-    redirectOnUnauthenticated: true,
-    redirectPath: '/login',
-  })
 
   const room = rooms.find((r) => r.id === roomId)
   const isPerBed = room?.perBed ?? false
@@ -25,7 +18,7 @@ export default function BookingConfirm() {
   const basePrice = priceOverride?.price ?? room?.price ?? ''
   const basePriceNote = priceOverride?.priceNote ?? room?.priceNote ?? ''
 
-  // Form states
+  // Form state
   const [checkInDate, setCheckInDate] = useState('')
   const [checkOutDate, setCheckOutDate] = useState('')
   const [guests, setGuests] = useState(isPerBed ? initialGuests : '2')
@@ -35,6 +28,7 @@ export default function BookingConfirm() {
   const [phoneError, setPhoneError] = useState('')
   const [message, setMessage] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
+  const [submitted, setSubmitted] = useState(false)
 
   // Reactive price calculation for per-bed rooms
   const guestCount = parseInt(guests, 10) || 1
@@ -45,7 +39,7 @@ export default function BookingConfirm() {
       : basePriceNote
     : basePriceNote
 
-  // Availability check — re-runs whenever the selected dates change
+  // Availability check
   const { data: availData } = trpc.reservation.checkAvailability.useQuery(
     { roomId: roomId ?? '', checkIn: checkInDate, checkOut: checkOutDate },
     { enabled: !!roomId && !!checkInDate && !!checkOutDate }
@@ -53,21 +47,14 @@ export default function BookingConfirm() {
   const capacity = room?.capacity ?? 1
   const isSoldOut = availData !== undefined && availData.bookedBeds >= capacity
 
-  // Pre-populate user info when user loads
-  useEffect(() => {
-    if (user) {
-      setFullName(user.name || '')
-      setEmail(user.email || '')
-    }
-  }, [user])
-
   const createReservation = trpc.reservation.create.useMutation({
     onSuccess: () => {
-      navigate('/dashboard')
+      setSubmitted(true)
     },
     onError: (err) => {
-      setErrorMsg(err.message || 'Something went wrong while booking. Please try again.')
-    }
+      console.error('[reservation.create] error:', err)
+      setErrorMsg(err.message || 'Something went wrong. Please try again.')
+    },
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -90,6 +77,7 @@ export default function BookingConfirm() {
       return
     }
     setPhoneError('')
+    setErrorMsg('')
 
     createReservation.mutate({
       checkInDate,
@@ -102,14 +90,6 @@ export default function BookingConfirm() {
       phone: `+91${digitsOnly}`,
       message,
     })
-  }
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white text-black">
-        <p className="text-sm tracking-widest uppercase animate-pulse">Loading auth details...</p>
-      </div>
-    )
   }
 
   if (!room) {
@@ -126,12 +106,39 @@ export default function BookingConfirm() {
     )
   }
 
+  // Success state
+  if (submitted) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white text-black px-4">
+        <div className="max-w-md w-full text-center space-y-6">
+          <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto">
+            <svg className="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-normal tracking-tight">Booking Request Received</h1>
+          <p className="text-sm text-neutral-500 leading-relaxed">
+            Thank you, <strong className="text-black">{fullName}</strong>! Your reservation request for{' '}
+            <strong className="text-black">{room.title}</strong> has been submitted. We'll contact you
+            at <strong className="text-black">{email}</strong> to confirm your booking.
+          </p>
+          <button
+            onClick={() => navigate('/')}
+            className="bg-black hover:bg-neutral-900 text-white px-8 py-3 text-xs uppercase tracking-widest transition"
+          >
+            Back to Home
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-white text-black pt-28 pb-20 px-4 md:px-8">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-4xl font-normal tracking-tight mb-2">Confirm Your Booking</h1>
         <p className="text-neutral-500 uppercase tracking-widest text-[10px] mb-12">
-          Step 2 of 2 &bull; Secure Payment & Booking Details
+          Booking Details &bull; Advance Payment
         </p>
 
         {errorMsg && (
@@ -141,7 +148,7 @@ export default function BookingConfirm() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Left Column: Input Form & QR Payment */}
+          {/* Left Column */}
           <div className="lg:col-span-7 space-y-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="bg-neutral-50 border border-neutral-200 p-6 space-y-6">
@@ -233,7 +240,6 @@ export default function BookingConfirm() {
                         placeholder="10-digit number"
                         value={phone}
                         onChange={(e) => {
-                          // Only allow digits
                           const digits = e.target.value.replace(/\D/g, '').slice(0, 10)
                           setPhone(digits)
                           if (phoneError) setPhoneError('')
@@ -248,7 +254,9 @@ export default function BookingConfirm() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs uppercase tracking-wider text-neutral-500">Special Requests / Message (Optional)</label>
+                  <label className="text-xs uppercase tracking-wider text-neutral-500">
+                    Special Requests / Message (Optional)
+                  </label>
                   <textarea
                     placeholder="Any requests regarding bedding, arrival time, etc."
                     value={message}
@@ -259,14 +267,14 @@ export default function BookingConfirm() {
                 </div>
               </div>
 
-              {/* QR Code Section */}
+              {/* QR Payment */}
               <div className="bg-neutral-50 border border-neutral-200 p-6 space-y-4">
                 <h3 className="text-sm uppercase tracking-wider font-medium border-b border-neutral-200 pb-3">
                   2. Advance Payment (QR Code)
                 </h3>
                 <p className="text-sm text-neutral-600 leading-relaxed">
-                  To secure your reservation, please scan the QR code below and pay a booking advance of <strong>₹500</strong>.
-                  Once done, check the confirmation checkbox below to proceed.
+                  To secure your reservation, please scan the QR code below and pay a booking advance of{' '}
+                  <strong>₹500</strong>. Once done, check the confirmation checkbox below to proceed.
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-center gap-6 py-4 bg-white p-4 border border-neutral-200 justify-center">
@@ -302,12 +310,12 @@ export default function BookingConfirm() {
                 disabled={createReservation.isPending}
                 className="w-full bg-black hover:bg-neutral-900 text-white py-4 text-xs font-semibold uppercase tracking-widest transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {createReservation.isPending ? 'Confirming booking...' : "I've Paid – Confirm Booking"}
+                {createReservation.isPending ? 'Submitting...' : "I've Paid – Confirm Booking"}
               </button>
             </form>
           </div>
 
-          {/* Right Column: Room Summary Card */}
+          {/* Right Column: Room Summary */}
           <div className="lg:col-span-5 bg-neutral-50 border border-neutral-200 p-6 space-y-6 lg:sticky lg:top-28">
             <h3 className="text-sm uppercase tracking-wider font-medium border-b border-neutral-200 pb-3">
               Room Summary
@@ -322,9 +330,7 @@ export default function BookingConfirm() {
             </div>
 
             <div>
-              <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-1">
-                {room.client}
-              </p>
+              <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-1">{room.client}</p>
               <h4 className="text-xl font-normal">{room.title}</h4>
             </div>
 
