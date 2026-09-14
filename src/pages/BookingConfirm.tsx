@@ -273,8 +273,8 @@ export default function BookingConfirm() {
                   2. Advance Payment (QR Code)
                 </h3>
                 <p className="text-sm text-neutral-600 leading-relaxed">
-                  To secure your reservation, please scan the QR code below and pay a booking advance of{' '}
-                  <strong>₹500</strong>. Once done, check the confirmation checkbox below to proceed.
+                  To secure your reservation, please scan the QR code below and pay the advance booking amount.
+                  Once done, check the confirmation checkbox below to proceed.
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-center gap-6 py-4 bg-white p-4 border border-neutral-200 justify-center">
@@ -285,7 +285,7 @@ export default function BookingConfirm() {
                   />
                   <div className="text-center sm:text-left space-y-2">
                     <p className="text-xs uppercase tracking-widest text-neutral-400">Scan to Pay</p>
-                    <p className="text-base font-semibold">₹500.00</p>
+                    <p className="text-base font-semibold">Advance Booking</p>
                     <p className="text-xs text-neutral-500">Faith The Retreat</p>
                     <p className="text-xs text-neutral-400 max-w-[200px]">
                       Supports all UPI apps (BHIM, Google Pay, PhonePe, Paytm, etc.)
@@ -300,7 +300,7 @@ export default function BookingConfirm() {
                     className="mt-1 accent-black h-4 w-4"
                   />
                   <span className="text-xs text-neutral-600 select-none">
-                    I confirm that I have made the advance payment of ₹500 via the QR code.
+                    I confirm that I have made the advance booking payment via the QR code.
                   </span>
                 </label>
               </div>

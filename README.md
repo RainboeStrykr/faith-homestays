@@ -1,70 +1,76 @@
-# Faith The Retreat — Fullstack Homestay Website
+# Faith The Retreat — Homestay Website
 
-A fullstack landing page and booking platform for **Faith The Retreat**, a warm, cosy homestay in Siliguri, West Bengal — the gateway to Sikkim, Bhutan, and the Eastern Himalayas.
+A fullstack website and booking platform for **Faith The Retreat**, a warm, cosy homestay in Siliguri, West Bengal — the gateway to Sikkim, Bhutan, and the Eastern Himalayas.
+
+---
 
 ## Features
 
-- Full-viewport video hero with left-aligned headline, subtitle, and CTAs (`Explore Rooms` / `Contact Us` via WhatsApp); transparent nav overlays the video until scroll
+- Full-viewport video hero with transparent nav that transitions on scroll
 - Ethos / philosophy section introducing the property
-- Rooms & Residences grid with 9 room cards (scroll-reactive canvas glitch effect); clicking a card renders the per-room detail view inline without a page change
-- Per-room detail view (`RoomDetail`) rendered from `src/data/rooms.ts` with a sticky price & booking panel; dormitory rooms support per-bed pricing that scales with guest count
-- Amenities section listing property facilities
-- Photo gallery section — 12 property images in an auto-scrolling infinite slider with hover captions
-- Testimonials section — sliding guest review cards
-- Booking Inquiry split section: a GLSL animated shader on the left and a reservation form on the right; submitting routes to `/booking/confirm`
-- CTA banner above the footer
-- Reservation requests persist to Supabase (PostgreSQL) via tRPC; room detail "Reserve This Room" also routes through the booking confirm flow
-- Auth0 Google sign-in; authenticated users have name/email pre-filled in forms; a `/dashboard` page shows booking history
-- Admin role support via `role` enum on the `users` table
-- Room prices can be overridden at runtime via the `room_prices` database table without redeploying
+- Rooms grid with 9 room cards and a scroll-reactive canvas glitch effect; clicking a card opens the per-room detail view inline
+- Per-room detail view with a sticky price & booking panel; dormitory rooms support per-bed pricing that scales with guest count
+- Amenities, Gallery (12-image auto-scrolling infinite slider), and Testimonials sections
+- Booking flow: "Reserve This Room" → `/booking/confirm` form → UPI QR advance payment → confirmation page
+- Reservation requests persisted to Supabase (PostgreSQL) via tRPC
+- Room prices can be overridden at runtime via the `room_prices` table without redeploying
+- Password-protected admin portal at `/admin` — view all reservations with pagination, confirm/cancel status, delete all, and manage room prices
+
+---
 
 ## Tech Stack
 
-- React 19 + TypeScript + Vite
-- Tailwind CSS v3 + shadcn/ui (Radix UI primitives)
-- GSAP + ScrollTrigger for scroll-triggered fade-ins and parallax
-- three.js for the booking inquiry GLSL shader
-- tRPC 11 + Hono + Drizzle ORM + Supabase (PostgreSQL)
-- Auth0 (Google OAuth2)
-- React Router v7
-- Embla Carousel / Infinite Slider for the gallery
-- Motion (Framer Motion v12) for micro-animations
-- Zod + React Hook Form for form validation
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, TypeScript, Vite |
+| Styling | Tailwind CSS v3, shadcn/ui (Radix UI) |
+| Animations | GSAP + ScrollTrigger, three.js (GLSL canvas), Motion (Framer Motion v12) |
+| Backend | Hono, tRPC 11 |
+| Database | Drizzle ORM, Supabase (PostgreSQL) |
+| Auth | Custom password-based admin session (HS256 JWT, HttpOnly cookie) |
+| Routing | React Router v7 |
+
+---
 
 ## Quick Start
 
-1. Clone / extract this repository
-2. Install dependencies: `npm install`
-3. Copy `.env.example` to `.env` and fill in `DATABASE_URL`, Auth0 credentials, and Admin credentials
-4. Run database migrations: `npm run db:push`
-5. Run the dev server: `npm run dev`
-6. Build for production: `npm run build`
+```bash
+# 1. Install dependencies
+npm install
 
-## Configuration
+# 2. Copy env file and fill in values
+cp .env.example .env
 
-Display content lives inline in sections and in `src/data/rooms.ts`; only reservation writes are persisted. To re-skin for a different property, edit the following:
+# 3. Push schema to Supabase
+npm run db:push
 
-- **`src/sections/Header.tsx`** — brand wordmark (`FAITH`), nav items (`Rooms`, `Amenities`, `Gallery`, `Contact`), and mobile drawer
-- **`src/sections/Hero.tsx`** — hero eyebrow, big title (`Welcome to Faith The Retreat`), subtitle, CTA buttons, WhatsApp link. Background video: `/videos/walkthrough-generation.mp4`
-- **`src/sections/Ethos.tsx`** — philosophy / ethos quote and tags
-- **`src/sections/RoomGrid.tsx`** — heading and eyebrow; cards rendered from `src/data/rooms.ts`
-- **`src/sections/Amenities.tsx`** — amenities heading and bullet grid. Background: `/videos/spatial.mp4`
-- **`src/sections/Gallery.tsx`** — heading `Our Gallery`, 12-image infinite slider from `public/images/gallery/`
-- **`src/sections/Testimonials.tsx`** — heading `Testimonials` and guest review cards
-- **`src/sections/BookingInquiry.tsx`** — left GLSL shader, right reservation form (routes to `/booking/confirm`)
-- **`src/sections/CTA.tsx`** — above-footer call-to-action banner
-- **`src/sections/Footer.tsx`** — brand logo, nav columns, contact details (email, phone, Instagram, address)
-- **`src/sections/Preloader.tsx`** — intro splash with the brand wordmark
-- **`src/pages/RoomDetail.tsx`** — per-room detail view; "Reserve This Room" routes to `/booking/confirm`
-- **`src/pages/BookingConfirm.tsx`** — booking confirmation + tRPC mutation to persist the reservation
-- **`src/pages/Dashboard.tsx`** — authenticated user booking history
-- **`src/data/rooms.ts`** — **source of truth for all 9 rooms** (id, title, client, img, tagline, description, features, price, priceNote, sqm, occupancy, bed, perBed, maxGuests, capacity)
-- **`index.html`** — `<title>` and meta tags
-- **`api/reservation-router.ts`** — tRPC router that persists submissions to `reservation_requests`
+# 4. Start development server
+npm run dev
+
+# 5. Build for production
+npm run build
+```
+
+---
+
+## Environment Variables
+
+```env
+# Secret for signing admin session JWTs (any long random string)
+APP_SECRET=
+
+# Supabase PostgreSQL connection URI (use port 5432, not 6543)
+DATABASE_URL=
+
+# Password for the /admin page
+ADMIN_PASSWORD=
+```
+
+---
 
 ## Rooms
 
-Nine room types are defined in `src/data/rooms.ts`, grouped into three collections:
+Nine room types defined in `src/data/rooms.ts`:
 
 **Premium & Family Collection**
 | ID | Room | Price |
@@ -73,7 +79,7 @@ Nine room types are defined in `src/data/rooms.ts`, grouped into three collectio
 | 02 | Superior Deluxe AC Room | ₹2,450 / night |
 | 03 | Premium Family Suite | ₹2,300 / night |
 
-**Standard Comfort & Value Rooms**
+**Standard Comfort & Value**
 | ID | Room | Price |
 |----|------|-------|
 | 04 | Standard Deluxe AC Room | ₹1,750 / night |
@@ -81,72 +87,136 @@ Nine room types are defined in `src/data/rooms.ts`, grouped into three collectio
 | 06 | Standard Cosy Room | ₹1,050 / night |
 | 07 | Standard Single Room | ₹800 / night |
 
-**Backpacker Dormitories**
+**Backpacker Dormitories** (per-bed pricing)
 | ID | Room | Price |
 |----|------|-------|
-| 08 | Premium AC Dormitory – Mixed Bunk | ₹850 / night, per person |
-| 09 | Premium AC Dormitory – Private Bunk | ₹950 / night, per person |
+| 08 | Premium AC Dormitory – Mixed Bunk | ₹850 / bed / night |
+| 09 | Premium AC Dormitory – Private Bunk | ₹950 / bed / night |
 
-Dormitory rooms (`perBed: true`) multiply price by guest count. All prices are inclusive of taxes.
+Dormitory rooms (`perBed: true`) multiply the price by the number of beds selected. All prices are inclusive of taxes.
+
+---
 
 ## Database Schema
 
-Three tables, defined in `db/schema.ts`:
+Defined in `db/schema.ts`, two tables in Supabase:
 
-- **`users`** — Auth0-managed (id, auth0Sub, name, email, avatar, role enum `user|admin`, createdAt, updatedAt, lastSignInAt)
-- **`reservation_requests`** — booking submissions (id, userId nullable, checkInDate, checkOutDate, guests, roomType, roomId nullable, fullName, email, phone, message, status enum `pending|confirmed|cancelled`, createdAt)
-- **`room_prices`** — optional runtime price overrides per roomId (id, roomId, price, priceNote, updatedAt); takes precedence over `src/data/rooms.ts` prices when present
+**`reservation_requests`**
+| Column | Type | Notes |
+|--------|------|-------|
+| id | serial PK | |
+| check_in_date | varchar | |
+| check_out_date | varchar | |
+| guests | varchar | |
+| room_type | varchar | Display name of the room |
+| room_id | varchar | ID from `src/data/rooms.ts` |
+| full_name | varchar | |
+| email | varchar | |
+| phone | varchar | Stored with +91 prefix |
+| message | text | Optional |
+| status | enum | `pending` / `confirmed` / `cancelled` |
+| created_at | timestamp | |
 
-Room content (descriptions, features, images) lives on the frontend in `src/data/rooms.ts` — do not duplicate it into the database.
+**`room_prices`**
+| Column | Type | Notes |
+|--------|------|-------|
+| id | serial PK | |
+| room_id | varchar UNIQUE | Matches ID in `src/data/rooms.ts` |
+| price | varchar | e.g. `₹1,800` |
+| price_note | varchar | e.g. `per night, taxes included` |
+| updated_at | timestamp | |
 
-## Required Assets
+> Room prices in `room_prices` override the defaults in `src/data/rooms.ts` without a redeploy.
 
-### Videos (place in `public/videos/`)
+---
 
-- `/videos/walkthrough-generation.mp4` — full-viewport top hero. Recommended: ~10–15 s loop, 1920×1080, property walkthrough or ambient interior
-- `/videos/spatial.mp4` — amenities section background. Recommended: ~10 s loop, 1920×1080, dark architectural interior
+## Admin Portal
 
-Either can be omitted — the section falls back to plain `#0b0b0b`.
+Visit `/admin` — protected by the `ADMIN_PASSWORD` env var.
 
-### Images
+- **Login** at `/admin/login` with the password; session lasts 30 days via a signed HttpOnly cookie
+- **Reservations** — paginated list (10 per page), confirm / cancel / reset-to-pending each booking, delete all
+- **Room Prices** — inline editor to override any room's price and price note
 
-Room photos are served from `public/images/` and referenced in `src/data/rooms.ts`. Gallery images are read from `public/images/gallery/` (gallery (1).jpg … gallery (12).jpg).
+---
+
+## Booking Flow
+
+1. Customer browses rooms on the homepage → clicks a room card → opens the room detail view
+2. Clicks **Reserve This Room** → navigated to `/booking/confirm?roomId=...&guests=...`
+3. Fills in check-in/out dates, guest count, name, email, phone, optional message
+4. Scans the UPI QR code and pays ₹500 advance → checks the confirmation checkbox
+5. Clicks **I've Paid – Confirm Booking** → reservation saved to DB with status `pending`
+6. Confirmation page shown: "We will contact you about your reservation soon"
+7. Reservation appears in the admin portal immediately
+
+---
 
 ## Project Structure
 
 ```
 .
-├── api/                   # tRPC routers: auth, reservation, listing. Hono server. Auth0 integration
-├── contracts/             # Shared tRPC types and constants
-├── db/                    # Drizzle schema, migrations, seed
+├── api/
+│   ├── auth0/             # Admin JWT session (sign + verify HS256 tokens)
+│   ├── lib/               # env, cookies, vite dev-server utils
+│   ├── queries/           # DB connection (Drizzle + postgres.js)
+│   ├── auth-router.ts     # tRPC: login, logout, me
+│   ├── listing-router.ts  # tRPC: getRoomPrices, updateRoomPrice
+│   ├── reservation-router.ts # tRPC: create, allReservations, updateStatus, deleteAll, checkAvailability
+│   ├── middleware.ts       # publicQuery + adminQuery procedures
+│   ├── context.ts         # tRPC context — reads admin session cookie
+│   ├── router.ts          # App router (combines all sub-routers)
+│   └── boot.ts            # Hono server entry point
+├── contracts/
+│   └── constants.ts       # Session config, error messages, paths
+├── db/
+│   ├── migrations/        # Drizzle-generated SQL migrations
+│   └── schema.ts          # reservation_requests + room_prices tables
 ├── public/
-│   ├── images/            # Room photos, gallery shots, QR code, logo
-│   └── videos/            # walkthrough-generation.mp4, spatial.mp4
+│   ├── images/            # Room photos, gallery, payment QR, logo
+│   └── videos/            # Hero video (placeholder-1.mp4), amenities video (spatial.mp4)
 ├── src/
-│   ├── sections/          # Header, Hero, Ethos, RoomGrid, Amenities, Gallery, Testimonials, BookingInquiry, CTA, Footer, Preloader
-│   ├── pages/             # RoomDetail, BookingConfirm, Dashboard, Login
-│   ├── components/        # shadcn/ui components + custom UI (InfiniteSlider, SlidingTestimonial, etc.)
-│   ├── data/              # rooms.ts — source of truth for all rooms
-│   ├── hooks/             # useAuth and other custom hooks
-│   └── providers/         # tRPC provider
-├── Dockerfile
+│   ├── data/
+│   │   └── rooms.ts       # Source of truth for all 9 rooms
+│   ├── pages/
+│   │   ├── AdminLogin.tsx # /admin/login — password form
+│   │   ├── Dashboard.tsx  # /admin — reservations + price management
+│   │   ├── BookingConfirm.tsx # /booking/confirm — booking form + QR payment
+│   │   └── RoomDetail.tsx # Inline room detail view (rendered on homepage)
+│   ├── sections/          # Header, Hero, Ethos, RoomGrid, Amenities, Gallery,
+│   │                      # Testimonials, CTA, Footer, Preloader
+│   ├── providers/
+│   │   └── trpc.tsx       # tRPC React client + QueryClient provider
+│   └── App.tsx            # Routes: /admin/login, /admin, /booking/confirm, *
 ├── drizzle.config.ts
-├── .backend-features.json # Declares ["auth", "db"]
+├── vite.config.ts
+├── Dockerfile
 └── .env.example
 ```
 
-## Design
+---
 
-- Dark-first palette: `#0b0b0b` hero, amenities, gallery, testimonials, booking inquiry; `#0F0F11` footer
-- Hero uses a vertical `0.55 → 0.25 → 0.55` black gradient over the video
-- Accent colour: `#fee600` (yellow) used on the primary CTA and footer icon highlights
-- Fonts: system sans-serif stack, Helvetica Neue display
-- Motion: GSAP ScrollTrigger fade-ins and parallax, canvas glitch on room cards (tied to scroll speed), GLSL animated shader in the booking inquiry section
+## Customisation
+
+To re-skin for a different property, edit:
+
+- **`src/data/rooms.ts`** — all room content (id, title, images, descriptions, features, pricing)
+- **`src/sections/Hero.tsx`** — headline, subtitle, CTA buttons, background video
+- **`src/sections/Footer.tsx`** — contact details (email, phone, Instagram, address)
+- **`src/sections/Ethos.tsx`** — philosophy quote and tags
+- **`src/sections/Amenities.tsx`** — facility list and background video
+- **`src/sections/Testimonials.tsx`** — guest review cards
+- **`src/sections/Header.tsx`** — brand wordmark and nav items
+- **`public/images/gallery/`** — replace `gallery (1).jpg` … `gallery (12).jpg`
+- **`public/images/payment-qr.png`** — UPI QR code for advance payment
+- **`index.html`** — page `<title>` and meta tags
+
+> Do not move room content into the database. `src/data/rooms.ts` is the single source of truth for displayed room data — only reservation writes and optional price overrides are persisted.
+
+---
 
 ## Notes
 
-- **Do not duplicate `src/data/rooms.ts` into the database** — it is the single source of truth for displayed room content; only reservation writes and optional price overrides are persisted
-- The booking inquiry form and each room's "Reserve This Room" button are the only frontend controls wired to the backend
-- The canvas glitch effect in `RoomGrid.tsx` reacts to scroll speed — preserve it; it is the repo's identity interaction
-- Do not remove `api/auth0/` — it handles Auth0 integration and session management
-- WhatsApp booking (`https://wa.me/918918803065`) is provided as a direct contact alternative to the online form
+- Use Supabase's **session pooler (port 5432)**, not the transaction pooler (port 6543) — the transaction pooler enforces statement timeouts that break queries
+- The canvas glitch effect in `RoomGrid.tsx` reacts to scroll speed — it is the site's primary identity interaction, don't remove it
+- WhatsApp direct contact: [+91 89188 03065](https://wa.me/918918803065)
