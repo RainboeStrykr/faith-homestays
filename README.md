@@ -32,7 +32,30 @@ A fullstack website and booking platform for **Faith The Retreat**, a warm, cosy
 
 ---
 
-## Quick Start
+## Deployment (Vercel)
+
+The app deploys to Vercel as a static Vite frontend + a Node.js serverless function for the API.
+
+**In the Vercel dashboard:**
+
+1. Import the GitHub repository
+2. Vercel will auto-detect `vercel.json` — no framework preset changes needed
+3. Add these environment variables under **Project Settings → Environment Variables**:
+
+| Variable | Value |
+|---|---|
+| `APP_SECRET` | Any long random string (signs admin JWTs) |
+| `DATABASE_URL` | Supabase connection URI — use **port 5432** (session pooler), not 6543 |
+| `ADMIN_PASSWORD` | Password for the `/admin` page |
+
+4. Deploy. The build command is `npm run build:vercel` (set in `vercel.json`)
+5. (Optional) Add your custom domain under **Project Settings → Domains**
+
+> The `Dockerfile` is kept for reference but is not used by Vercel deployments.
+
+---
+
+
 
 ```bash
 # 1. Install dependencies

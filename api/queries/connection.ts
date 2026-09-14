@@ -8,7 +8,7 @@ let instance: ReturnType<typeof drizzle<typeof schema>> | undefined;
 export function getDb() {
   if (!instance) {
     const client = postgres(env.databaseUrl, {
-      max: 5,
+      max: 1,         // one connection per serverless invocation
       connect_timeout: 15,
     });
     instance = drizzle(client, { schema });
