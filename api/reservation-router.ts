@@ -3,6 +3,7 @@ import { createRouter, adminQuery, publicQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { reservationRequests } from "@db/schema";
 import { eq, desc, and, sql, count } from "drizzle-orm";
+import { sendBookingNotification } from "./lib/email";
 
 export const reservationRouter = createRouter({
   /**
@@ -37,7 +38,23 @@ export const reservationRouter = createRouter({
         message: input.message ?? null,
         status: "pending",
       }).returning({ id: reservationRequests.id });
-      return { id: result[0].id, success: true };
+
+      const id = result[0].id;
+
+      // Fire-and-forget — email failure never blocks the booking response
+      void sendBookingNotification({
+        id,
+        fullName: input.fullName,
+        email: input.email,
+        phone: input.phone,
+        roomType: input.roomType,
+        checkInDate: input.checkInDate,
+        checkOutDate: input.checkOutDate,
+        guests: input.guests,
+        message: input.message,
+      });
+
+      return { id, success: true };
     }),
 
   /**

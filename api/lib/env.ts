@@ -13,4 +13,6 @@ export const env = {
   isProduction: process.env.NODE_ENV === "production",
   databaseUrl: required("DATABASE_URL"),
   adminPassword: required("ADMIN_PASSWORD"),
+  resendApiKey: required("RESEND_API_KEY"),
+  notifyEmail: required("NOTIFY_EMAIL"),
 };
