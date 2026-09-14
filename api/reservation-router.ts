@@ -48,6 +48,7 @@ export const reservationRouter = createRouter({
         email: input.email,
         phone: input.phone,
         roomType: input.roomType,
+        roomId: input.roomId,
         checkInDate: input.checkInDate,
         checkOutDate: input.checkOutDate,
         guests: input.guests,

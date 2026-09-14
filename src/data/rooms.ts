@@ -25,7 +25,7 @@ export interface Room {
 
 export const rooms: Room[] = [
   {
-    id: '01',
+    id: '06',
     title: 'Standard Deluxe Cosy Room',
     client: 'Premium & Family Collection',
     img: '/images/standard-deluxe-cosy.png',
@@ -71,7 +71,7 @@ export const rooms: Room[] = [
     bed: 'Double bed',
   },
   {
-    id: '03',
+    id: '01',
     title: 'Premium Family Suite',
     client: 'Premium & Family Collection',
     img: '/images/premium-family-suite.png',
@@ -117,7 +117,7 @@ export const rooms: Room[] = [
     bed: 'Double bed',
   },
   {
-    id: '05',
+    id: '07',
     title: 'Standard Backpacker\'s Twin Room',
     client: 'Standard Comfort & Value Rooms',
     img: '/images/standard-backpackers-twin.png',
@@ -140,7 +140,7 @@ export const rooms: Room[] = [
     bed: 'Twin beds',
   },
   {
-    id: '06',
+    id: '03',
     title: 'Standard Cosy Room',
     client: 'Standard Comfort & Value Rooms',
     img: '/images/standard-cosy-single.png',
@@ -163,7 +163,7 @@ export const rooms: Room[] = [
     bed: 'Single bed',
   },
   {
-    id: '07',
+    id: '05',
     title: 'Standard Single Room',
     client: 'Standard Comfort & Value Rooms',
     img: '/images/standard-single-room.png',

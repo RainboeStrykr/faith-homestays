@@ -6,6 +6,7 @@ export interface BookingEmailData {
   email: string;
   phone: string;
   roomType: string;
+  roomId?: string | null;
   checkInDate: string;
   checkOutDate: string;
   guests: string;
@@ -44,6 +45,10 @@ export async function sendBookingNotification(data: BookingEmailData): Promise<v
           <tr>
             <td style="padding:12px 16px;color:#666">Room</td>
             <td style="padding:12px 16px;font-weight:500">${data.roomType}</td>
+          </tr>
+          <tr style="background:#f9f9f9">
+            <td style="padding:12px 16px;color:#666">Room Number</td>
+            <td style="padding:12px 16px;font-weight:500">${data.roomId ?? '—'}</td>
           </tr>
           <tr style="background:#f9f9f9">
             <td style="padding:12px 16px;color:#666">Guest</td>
