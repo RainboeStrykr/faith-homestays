@@ -113,7 +113,7 @@ export default function Hero() {
         >
           Welcome to
           <br />
-          Faith
+          Faith The Retreat & Dorms
         </h1>
 
         <p
