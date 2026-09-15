@@ -138,7 +138,7 @@ export default function BookingConfirm() {
       <div className="max-w-5xl mx-auto">
         <h1 className="text-4xl font-normal tracking-tight mb-2">Confirm Your Booking</h1>
         <p className="text-neutral-500 uppercase tracking-widest text-[10px] mb-12">
-          Booking Details &bull; Advance Payment
+          Booking Details &bull; Online Payment
         </p>
 
         {errorMsg && (
@@ -270,10 +270,10 @@ export default function BookingConfirm() {
               {/* QR Payment */}
               <div className="bg-neutral-50 border border-neutral-200 p-6 space-y-4">
                 <h3 className="text-sm uppercase tracking-wider font-medium border-b border-neutral-200 pb-3">
-                  2. Advance Payment (QR Code)
+                  2. Online Payment (QR Code)
                 </h3>
                 <p className="text-sm text-neutral-600 leading-relaxed">
-                  To secure your reservation, please scan the QR code below and pay the advance booking amount.
+                  To secure your reservation, please scan the QR code below and pay the booking amount.
                   Once done, check the confirmation checkbox below to proceed.
                 </p>
 
@@ -284,8 +284,8 @@ export default function BookingConfirm() {
                     className="w-48 h-48 object-contain border border-neutral-100"
                   />
                   <div className="text-center sm:text-left space-y-2">
-                    <p className="text-xs uppercase tracking-widest text-neutral-400">Scan to Pay</p>
-                    <p className="text-base font-semibold">Advance Booking</p>
+                    <p className="text-xs uppercase tracking-widest text-neutral-400">Online Payment</p>
+                    <p className="text-base font-semibold">Scan to Pay</p>
                     <p className="text-xs text-neutral-500">Faith The Retreat</p>
                     <p className="text-xs text-neutral-400 max-w-[200px]">
                       Supports all UPI apps (BHIM, Google Pay, PhonePe, Paytm, etc.)
