@@ -113,7 +113,7 @@ export default function Hero() {
         >
           Welcome to
           <br />
-          Faith The Retreat
+          Faith
         </h1>
 
         <p
@@ -125,9 +125,8 @@ export default function Hero() {
             maxWidth: '520px',
           }}
         >
-          A warm, cosy and hygienic homestay that feels like home far from home.
-          Faith brings affordable yet premium stay options for every visitor and
-          traveller exploring Siliguri and the Eastern Himalayas.
+          Faith The Retreat brings warm, cosy and hygienic homestay that feels like home far from home while providing affordable yet premium stay options for every visitor and
+          traveller. Faith Dorms boasts as the best mixed & private dorms with best amenities and a comfort that is redifined.
         </p>
 
         <div style={{ display: 'flex', gap: '16px', marginTop: '12px', flexWrap: 'wrap' }}>
