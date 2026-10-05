@@ -200,6 +200,7 @@ export const rooms: Room[] = [
       'Fully air-conditioned premium space',
       'Great for socialising, networking, and meeting travellers',
       'Per-person pricing (Occupancy = 1)',
+      'Complimentary Breakfast',
       'Secure and comfortable sleeping setup with shared facilities'
     ],
     price: '₹850',
@@ -224,6 +225,7 @@ export const rooms: Room[] = [
     features: [
       'Single bunk bed in a private/exclusive dorm setting',
       'Fully air-conditioned premium space',
+      'Complimentary Breakfast',
       'Quieter environment designed for better sleep',
       'Per-person pricing (Occupancy = 1)',
       'Ideal for light sleepers, remote workers, and introverted travellers'
