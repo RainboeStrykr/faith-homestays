@@ -200,6 +200,22 @@ function RoomCard({
             Sold Out
           </div>
         )}
+        <div
+          style={{
+            position: 'absolute',
+            top: '14px',
+            right: '14px',
+            backgroundColor: 'rgba(0, 0, 0, 0.72)',
+            color: '#ffffff',
+            backdropFilter: 'blur(4px)',
+            padding: '5px 11px',
+            fontFamily: '"Helvetica Neue", sans-serif',
+          }}
+        >
+          <span style={{ fontSize: '15px', fontWeight: 500, letterSpacing: '-0.01em' }}>
+            {room.price}
+          </span>
+        </div>
       </div>
       <div
         style={{
@@ -237,7 +253,7 @@ function RoomCard({
         </div>
         <span
           style={{
-            fontSize: '12px',
+            fontSize: 'clamp(15px, 2.5vw, 12px)',
             letterSpacing: '0.14em',
             color: soldOut ? '#999999' : '#000000',
             textTransform: 'uppercase',
